@@ -1,0 +1,24 @@
+/* .mantine-Calendar-day.mantine-Calendar-day-selected {
+  background-color: rgb(73, 73, 217);
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+}
+
+.mantine-Calendar-day:hover {
+  background-color: rgb(73, 73, 217);
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+}
+
+.mantine-Calendar-day {
+  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+
+.mantine-Calendar-day:focus {
+} */

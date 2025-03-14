@@ -35,12 +35,17 @@ h1 {
   line-height: 1.1;
 }
 
-.btn {
+.btn:link, .btn:visited {
   border:none;
   background-color: none;
   padding:12px 24px;
   cursor: pointer;
+  color:#000;
+  font-weight: 100;
+  display: inline-block;
 }
+
+
 button:hover {
   border-color: #646cff;
 }

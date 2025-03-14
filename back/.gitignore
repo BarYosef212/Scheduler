@@ -3,3 +3,7 @@ dist/
 *.env
 check-prisma/
 prisma/
+src/caching.ts
+src/queries.ts
+src/realtime.ts
+

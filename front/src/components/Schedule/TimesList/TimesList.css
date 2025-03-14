@@ -1,0 +1,36 @@
+.Schedule-container{
+  gap:24px;
+}
+
+
+
+.timesList-timeLabel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 300px;
+  width:280px;
+  overflow-y: scroll; 
+  padding-right: 4px; 
+}
+
+
+/* Spinner styles */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}

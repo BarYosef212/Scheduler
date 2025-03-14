@@ -5,7 +5,7 @@ const Main: React.FC = () => {
     <main className='main-page'>
      <h1 className="main-main-label">ARIEL HAIR STYLE</h1> 
      <h4>ספר גברים, ניתן לקבוע תור כעת</h4>
-     <button className='btn main-main-btn'>קבע תור</button>
+     <a href='/Schedule' className='btn main-main-btn'>קבע תור</a>
     </main>
   );
 };
