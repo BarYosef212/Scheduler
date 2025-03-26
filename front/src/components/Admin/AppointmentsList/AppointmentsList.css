@@ -1,0 +1,36 @@
+.appointments-container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.calendar-section {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+  padding-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.appointments-list-wrapper {
+  overflow-y: auto;
+  height: 100%;
+  padding: 20px 16px;
+}
+
+.no-appointments {
+  text-align: center;
+  color: #ef4444;
+  font-weight: 500;
+  padding: 20px;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .calendar-section {
+    padding-bottom: 15px;
+  }
+}
+

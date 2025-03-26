@@ -1,24 +1,18 @@
-/* .mantine-Calendar-day.mantine-Calendar-day-selected {
-  background-color: rgb(73, 73, 217);
-  color: white;
-  font-weight: bold;
-  border-radius: 50%;
-  border: none;
-  outline: none;
+.calendar-section{
+  display: flex;
+  justify-content: center;
 }
 
-.mantine-Calendar-day:hover {
-  background-color: rgb(73, 73, 217);
-  color: white;
-  cursor: pointer;
-  border-radius: 50%;
-  border: none;
-  outline: none;
+.booked-date {
+  position: relative;
 }
 
-.mantine-Calendar-day {
-  transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+.booked-date::after {
+  content: "•";
+  color: rgb(0, 0, 255);
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
 }
-
-.mantine-Calendar-day:focus {
-} */

@@ -1,23 +1,35 @@
 import './TimeLabel.css';
-import { useEffect, useState } from 'react';
+import { useContext } from 'react';
 interface TimeLabelProp {
   time: String;
-  selectedDate: Date | null;
+  index: number;
+  setSelectedHour: React.Dispatch<React.SetStateAction<string | null>>;
+  selectedTimeIndex: number;
+  setSelectedTimeIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const TimeLabel: React.FC<TimeLabelProp> = ({ time, selectedDate }) => {
-  const dividedTime = time.split("-")
+const TimeLabel: React.FC<TimeLabelProp> = ({
+  time,
+  index,
+  setSelectedHour,
+  selectedTimeIndex,
+  setSelectedTimeIndex,
+}) => {
+  const dividedTime = time.split('-');
   const hour = dividedTime[0];
   const minute = dividedTime[1];
-
-  // function handleSelectedTime() {
-  //   selectedDate?.setHours(time.getHours());
-  //   selectedDate?.setMinutes(time.getMinutes());
-  // }
   return (
     <>
-      <button className={`TimeLabel-hour-label}`}>
-        <span>{hour}</span>:<span>{minute}</span>
+      <button
+        className={`TimeLabel-hour-label} ${
+          selectedTimeIndex == index ? `selected` : ``
+        }`}
+        onClick={() => {
+          setSelectedTimeIndex(index);
+          setSelectedHour(`${hour}-${minute}`);
+        }}
+      >
+        <span>{hour}</span>-<span>{minute}</span>
       </button>
     </>
   );

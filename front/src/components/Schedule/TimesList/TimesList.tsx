@@ -1,47 +1,38 @@
 import { useEffect, useState } from 'react';
 import TimeLabel from './TimeLabel/TimeLabel';
 import './TimesList.css';
+import { Loader } from '@mantine/core';
 import { filterAvailabilitiesHours } from '../../../services/services';
-import { Availability } from '../../../types/userTypes';
+import { Availability } from '../../../types/modelTypes';
 
 interface TimesListProps {
-  timesList: String[];
-  selectedDate: Date | null;
-  setTimesList: React.Dispatch<React.SetStateAction<String[]>>;
-  allTimes: Availability[];
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date|null>>;
-  isLoadingTimesList:boolean
+  isLoadingTimesList: boolean;
+  setSelectedHour: React.Dispatch<React.SetStateAction<string | null>>;
+  allAvailabilities: Availability[];
+  selectedDate: Date;
 }
 
 const TimesList: React.FC<TimesListProps> = ({
-  timesList,
-  setTimesList,
-  selectedDate,
-  allTimes,
-  setSelectedDate,
   isLoadingTimesList,
+  setSelectedHour,
+  allAvailabilities,
+  selectedDate,
 }) => {
-  const [isSelected, setIsSelected] = useState<boolean>(false);
+  const [timesList, setTimesList] = useState<string[]>([]);
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(-1);
 
   useEffect(() => {
-    const dateStr = selectedDate
-      ? `${selectedDate?.getDate()}-${
-          selectedDate?.getMonth() + 1
-        }-${selectedDate?.getFullYear()}`
-      : '';
-    filterAvailabilitiesHours(allTimes, dateStr).then((list) =>
-      setTimesList(list),
-    );
+    console.log("enter")
+    const list = filterAvailabilitiesHours(allAvailabilities, selectedDate);
+    console.log("list after change: ",list)
+    setTimesList(list), setSelectedTimeIndex(-1);
+    setSelectedHour(null);
   }, [selectedDate]);
-
-  useEffect(() => {
-    setSelectedDate(new Date());
-  }, [allTimes]);
 
   return (
     <>
       {isLoadingTimesList ? (
-        <div className='loading-spinner'></div>
+        <Loader />
       ) : (
         <div className='timesList-timeLabel-list'>
           {timesList &&
@@ -49,8 +40,11 @@ const TimesList: React.FC<TimesListProps> = ({
               return (
                 <TimeLabel
                   key={index}
+                  index={index}
                   time={time}
-                  selectedDate={selectedDate}
+                  setSelectedTimeIndex={setSelectedTimeIndex}
+                  selectedTimeIndex={selectedTimeIndex}
+                  setSelectedHour={setSelectedHour}
                 />
               );
             })}

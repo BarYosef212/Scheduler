@@ -1,30 +1,47 @@
 import dayjs from 'dayjs';
 import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.css';
+import './CalendarComp.css';
 // https://mantine.dev/dates/calendar/?t=props
 
 interface CalendarCompProp {
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>
-  selectedDate:Date | null
+  scheduledDates?: Date[];
+  selectedDate: Date;
+  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
 }
 
-const CalendarComp: React.FC<CalendarCompProp> = ({ setSelectedDate,selectedDate }) => {
-  const handleSelect = (dateSelected: Date) => {
-    if (selectedDate && dayjs(dateSelected).isSame(selectedDate, 'date')) {
-      setSelectedDate(null);
-    } else {
-      setSelectedDate(dateSelected)
+const CalendarComp: React.FC<CalendarCompProp> = ({
+  scheduledDates,
+  selectedDate,
+  setSelectedDate,
+}) => {
+
+  const handleSelectDate = (dateSelected: Date) => {
+    if (!selectedDate || !dayjs(dateSelected).isSame(selectedDate, 'date')) {
+      setSelectedDate(dateSelected);
     }
   };
-  
+  const excludeDates = (date: Date) => {
+    return date.getDay() == 5 || date.getDay() == 6;
+  };
+
   return (
     <Calendar
-      getDayProps={(dateSelected) => ({
-        selected: selectedDate
-          ? dayjs(dateSelected).isSame(selectedDate, 'date')
-          : false,
-        onClick: () => handleSelect(dateSelected),
-      })}
+      excludeDate={excludeDates}
+      getDayProps={(dateSelected) => {
+        const formattedDate = dayjs(dateSelected).format('YYYY-MM-DD');
+        return {
+          selected: selectedDate
+            ? dayjs(dateSelected).isSame(selectedDate, 'date')
+            : false,
+          onClick: () => handleSelectDate(dateSelected),
+          className: scheduledDates
+            ?.map((date) => dayjs(date).format('YYYY-MM-DD'))
+            ?.includes(formattedDate)
+            ? 'booked-date'
+            : '',
+        };
+      }}
       firstDayOfWeek={0}
       weekendDays={[5, 6]}
       defaultDate={new Date()}

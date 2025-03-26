@@ -16,7 +16,7 @@
     "@mantine/hooks": "^7.17.1",
     "@mui/material": "^6.4.6",
     "@mui/x-date-pickers": "^7.27.1",
-    "@prisma/client": "6.4.1",
+    "@prisma/client": "^6.5.0",
     "@prisma/extension-accelerate": "1.2.2",
     "@prisma/extension-pulse": "1.2.2",
     "@types/body-parser": "^1.19.5",
@@ -34,7 +34,7 @@
     "@types/axios": "^0.9.36",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
-    "prisma": "6.4.1",
+    "prisma": "^6.5.0",
     "ts-node": "10.9.2",
     "typescript": "5.7.3"
   }

@@ -1,18 +1,20 @@
 export interface Booking {
-  id: number,
-  name: string,
+  id?: string,
+  status: 'CONFIRMED' | 'CANCELLED',
   date: Date,
-  userId: number,
+  hour: string,
+  userId: string,
   clientName: string,
   clientEmail: string | null,
   clientPhone: string,
+  createdAt:Date
 }
 
 
 export interface Availability {
   id: string
   userId: string
-  date: string
+  date: Date
   times: string[]
   createdAt: Date
   updatedAt: Date

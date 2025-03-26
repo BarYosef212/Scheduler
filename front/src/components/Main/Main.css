@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Arsenal+SC:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+Hebrew:wght@100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Rubik+Glitch+Pop&display=swap');
 
 
-.main-page{
+.main-page {
   font-family: "Arsenal SC", serif;
 }
 
@@ -15,9 +15,15 @@
   font-style: normal;
 }
 
-.main-main-btn{
+.main-main-btn {
   font-family: inherit;
-  background-color:rgb(255, 228, 196);
+  background-color: rgb(255, 228, 196);
   padding: 18px 36px;
   font-size: 18px;
+}
+
+.main-page {
+  display: 'flex';
+  flex-direction: 'column';
+  gap: '24px';
 }
