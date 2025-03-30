@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
 import * as service from '../services/bookingServices'
 import { Booking } from "../types/modelsTypes";
-const prisma = new PrismaClient()
+import { BOOKING_MESSAGES, AVAILABILITY_MESSAGES, GENERAL_MESSAGES } from "./messages";
 
 
-export const scheduleBooking = async (req: Request, res: Response): Promise<void> => {
+export const scheduleBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { date, hour, userId, clientName, clientEmail, clientPhone }: Booking = req.body
+    
+    if (!date || !hour || !userId || !clientName || !clientPhone) {
+      return res.status(400).json({ message: GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED })
+    }
     const data = {
-      date: date,
+      date: new Date(date),
       hour: hour,
       userId: userId,
       clientName: clientName,
@@ -17,79 +20,68 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<void
       clientPhone: clientPhone
     }
 
-    const response = await service.scheduleBooking(data)
-    response ? res.json({ message: "done" }) : res.status(400).json({ message: "שגיאה בעת הזמנת התור, אנא נסה שנית" })
-    return
 
+    const Booking = await service.scheduleBooking(data)
+    return Booking ? res.json({ Booking }) : res.status(400).json({ message: BOOKING_MESSAGES.FAIL_NEW_BOOKING })
   } catch (error) {
-    console.error("error in schedule booking controller")
-    res.status(500).json({
-      message: "error occurred, please try again later"
+    console.error("error in schedule booking controller: ",error)
+    return res.status(500).json({
+      message: GENERAL_MESSAGES.UNKNOWN_ERROR
     })
   }
 }
 
-export const getBookings = async (req: Request, res: Response): Promise<void> => {
+export const getConfirmedBookings = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const bookings = await prisma.booking.findMany({
-      where: {
-        status: "CONFIRMED"
-      }
-    })
+    const bookings = await service.getAllBookings()
+
     if (bookings) {
-      res.json({
-        bookings
-      })
+      const filtered = bookings.filter((booking) => booking.status == "CONFIRMED")
+      return res.json({ bookings: filtered })
     }
+    return res.status(400).json({ message: GENERAL_MESSAGES.API_ERROR })
   } catch (error) {
     console.error("error with getBookings controller")
-    res.status(500).json({
-      message: "error occurred, please try again later"
+    return res.status(500).json({
+      message: GENERAL_MESSAGES.UNKNOWN_ERROR
     })
   }
 }
 
-export const cancelBooking = async (req: Request, res: Response): Promise<void> => {
+export const cancelBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { booking } = req.body
-    const deleted = await service.cancelBooking(booking)
-    if (deleted) res.sendStatus(200)
-    else res.status(400).json({ message: "שגיאה בעת ביטול התור" })
+    const canceled = await service.cancelBooking(booking)
+    if (canceled) return res.sendStatus(200)
+    else return res.status(400).json({ message: BOOKING_MESSAGES.FAIL_CANCEL_BOOKING })
 
   } catch (error) {
     console.error("error with cancelBooking controller")
-    res.status(500).json({
-      message: "error occurred, please try again later"
+    return res.status(500).json({
+      message: GENERAL_MESSAGES.UNKNOWN_ERROR
     })
   }
 }
 
-export const updateBooking = async (req: Request, res: Response): Promise<void> => {
+export const updateBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { newBooking, oldBooking } = req.body
     newBooking.date = new Date(newBooking.date)
+    newBooking.updatedFromId = oldBooking.id
 
-    const booked = await service.scheduleBooking(newBooking, oldBooking.id)
+    const booked = await service.scheduleBooking(newBooking)
 
     if (!booked) {
-      res.status(400).json({ message: "שגיאה בעת עדכון התור" })
-      return
+      return res.status(400).json({ message: BOOKING_MESSAGES.FAIL_UPDATE_BOOKING })
     }
-    await service.cancelBooking(oldBooking)
-    await prisma.booking.update({
-      where: { id: oldBooking.id },
-      data: {
-        status: "UPDATED",
-      }
-    })
 
-    res.json({
-      message: "התור עודכן"
+    return res.json({
+      message:BOOKING_MESSAGES.SUCCESS_UPDATE 
     })
   } catch (error) {
     console.error("error with updateBooking controller")
-    res.status(500).json({
-      message: "error occurred, please try again later"
+    return res.status(500).json({
+      message: GENERAL_MESSAGES.UNKNOWN_ERROR
     })
   }
 }

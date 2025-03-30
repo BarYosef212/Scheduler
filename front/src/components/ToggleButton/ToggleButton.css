@@ -1,0 +1,69 @@
+.toggle-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.toggle-wrapper {
+  display: flex;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 4px;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-wrapper::before {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: calc(100% - 8px);
+  background-color: white;
+  top: 4px;
+  left: 4px;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-wrapper.cancel-selected::before {
+  transform: translateX(0);
+}
+
+.toggle-wrapper.add-selected::before {
+  transform: translateX(100%);
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  margin: 0 2px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  color: #666;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  outline: none;
+  border: none;
+}
+
+.toggle-button.active {
+  color: white;
+  outline: none;
+  border: none;
+}
+
+.toggle-button:focus{
+  outline: none;
+}
+
+.toggle-wrapper.cancel-selected .toggle-button:first-child {
+  color: #dc2626;
+}
+
+.toggle-wrapper.add-selected .toggle-button:last-child {
+  color: #2563eb;
+}

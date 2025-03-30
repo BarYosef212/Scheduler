@@ -19,3 +19,11 @@ export interface Availability {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface User {
+  id: string,
+  email: string,
+  name: string,
+  password: string,
+  daysExcluded: number[]
+}

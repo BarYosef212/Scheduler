@@ -1,36 +1,28 @@
 import { useEffect, useState } from 'react';
 import './AppointmentsList.css';
-import { Availability, Booking } from '../../../types/modelTypes';
+import { Booking } from '../../../types/modelTypes';
 import * as services from '../../../services/services';
 import CalendarComp from '../../Schedule/Calendar/CalendarComp';
 import AppointmentLabel from './AppointmentLabel/AppointmentLabel';
 import { Loader } from '@mantine/core';
+import { useValuesAdmin } from '../context/AdminContext';
 
-interface AppointmentsListProps {
-  setCurrentView: React.Dispatch<
-    React.SetStateAction<'main' | 'appointments' | 'loadingAppointments'>
-  >;
-}
-
-const AppointmentsList: React.FC<AppointmentsListProps> = ({
-  setCurrentView,
-}) => {
+const AppointmentsList = () => {
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
-  const [allTimes, setAllTimes] = useState<Availability[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [scheduledDates, setScheduledDates] = useState<Date[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isLoading, setIsLoading } = useValuesAdmin();
 
-  useEffect(() => {
-    services.getAvailabilities().then((list) => setAllTimes(list));
-  }, []);
+  const { setStep,setAllTimes,allTimes } = useValuesAdmin();
 
   useEffect(() => {
     services
       .getBookings()
       .then((list) => setAllBookings(list))
       .then(() => setIsLoading(false));
+
+    services.getAvailabilities().then((list) => setAllTimes(list));
   }, []);
 
   useEffect(() => {
@@ -41,18 +33,22 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({
     setScheduledDates(allBookings.map((booking) => booking.date));
   }, [allBookings]);
 
+
   return (
     <>
-      <button onClick={() => setCurrentView('main')}>חזור</button>
       {isLoading ? (
         <Loader />
       ) : (
         <div className='appointments-container'>
+          <button className='back-button' onClick={() => setStep(1)}>
+            חזור
+          </button>
+
           <div className='calendar-section'>
             <CalendarComp
-              setSelectedDate={setSelectedDate}
-              selectedDate={selectedDate}
               scheduledDates={scheduledDates}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
             />
           </div>
 
@@ -62,8 +58,8 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({
                 לא נמצאו תורים מוזמנים לתאריך זה
               </p>
             ) : (
-              bookings.map((booking, index) => {
-                return (
+              <div className='appointment-list'>
+                {bookings.map((booking, index) => (
                   <div className='appointment-item' key={index}>
                     <AppointmentLabel
                       booking={booking}
@@ -71,8 +67,8 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({
                       allTimes={allTimes}
                     />
                   </div>
-                );
-              })
+                ))}
+              </div>
             )}
           </div>
         </div>

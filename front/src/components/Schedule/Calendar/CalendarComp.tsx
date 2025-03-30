@@ -2,27 +2,32 @@ import dayjs from 'dayjs';
 import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import './CalendarComp.css';
+import { useValuesSchedule } from '../context/ScheduleContext';
 // https://mantine.dev/dates/calendar/?t=props
 
 interface CalendarCompProp {
   scheduledDates?: Date[];
+  minDate?: Date;
   selectedDate: Date;
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>;
+  setSelectedDate: (args: Date) => void;
 }
 
 const CalendarComp: React.FC<CalendarCompProp> = ({
-  scheduledDates,
+  scheduledDates = [],
+  minDate = new Date(),
   selectedDate,
   setSelectedDate,
 }) => {
+  const { daysExcluded } = useValuesSchedule();
+
+  const excludeDates = (date: Date) => {
+    return daysExcluded?.includes(date.getDay()) || false;
+  };
 
   const handleSelectDate = (dateSelected: Date) => {
     if (!selectedDate || !dayjs(dateSelected).isSame(selectedDate, 'date')) {
       setSelectedDate(dateSelected);
     }
-  };
-  const excludeDates = (date: Date) => {
-    return date.getDay() == 5 || date.getDay() == 6;
   };
 
   return (
@@ -45,7 +50,7 @@ const CalendarComp: React.FC<CalendarCompProp> = ({
       firstDayOfWeek={0}
       weekendDays={[5, 6]}
       defaultDate={new Date()}
-      minDate={new Date()}
+      minDate={minDate && new Date()}
     />
   );
 };

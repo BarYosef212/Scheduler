@@ -1,9 +1,8 @@
+import { useValuesSchedule } from '../../context/ScheduleContext';
 import './TimeLabel.css';
-import { useContext } from 'react';
 interface TimeLabelProp {
   time: String;
   index: number;
-  setSelectedHour: React.Dispatch<React.SetStateAction<string | null>>;
   selectedTimeIndex: number;
   setSelectedTimeIndex: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -11,10 +10,10 @@ interface TimeLabelProp {
 const TimeLabel: React.FC<TimeLabelProp> = ({
   time,
   index,
-  setSelectedHour,
   selectedTimeIndex,
   setSelectedTimeIndex,
 }) => {
+  const {setSelectedHour} = useValuesSchedule()
   const dividedTime = time.split('-');
   const hour = dividedTime[0];
   const minute = dividedTime[1];

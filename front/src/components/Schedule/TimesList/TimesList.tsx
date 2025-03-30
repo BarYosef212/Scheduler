@@ -3,32 +3,29 @@ import TimeLabel from './TimeLabel/TimeLabel';
 import './TimesList.css';
 import { Loader } from '@mantine/core';
 import { filterAvailabilitiesHours } from '../../../services/services';
-import { Availability } from '../../../types/modelTypes';
+import { useValuesSchedule } from '../context/ScheduleContext';
+import { v4 as uuid } from 'uuid';
 
-interface TimesListProps {
-  isLoadingTimesList: boolean;
-  setSelectedHour: React.Dispatch<React.SetStateAction<string | null>>;
-  allAvailabilities: Availability[];
-  selectedDate: Date;
-}
 
-const TimesList: React.FC<TimesListProps> = ({
-  isLoadingTimesList,
-  setSelectedHour,
-  allAvailabilities,
-  selectedDate,
-}) => {
+const TimesList: React.FC = () => {
   const [timesList, setTimesList] = useState<string[]>([]);
   const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(-1);
+  const {
+    setSelectedHour,
+    selectedDate,
+    allAvailabilities,
+    isLoadingTimesList,
+  } = useValuesSchedule();
 
   useEffect(() => {
-    console.log("enter")
-    const list = filterAvailabilitiesHours(allAvailabilities, selectedDate);
-    console.log("list after change: ",list)
-    setTimesList(list), setSelectedTimeIndex(-1);
+    const list = filterAvailabilitiesHours(allAvailabilities, selectedDate)
+    setTimesList(list), 
+    setSelectedTimeIndex(-1);
     setSelectedHour(null);
   }, [selectedDate]);
 
+
+  
   return (
     <>
       {isLoadingTimesList ? (
@@ -39,12 +36,11 @@ const TimesList: React.FC<TimesListProps> = ({
             timesList.map((time, index) => {
               return (
                 <TimeLabel
-                  key={index}
+                  key={uuid()}
                   index={index}
                   time={time}
                   setSelectedTimeIndex={setSelectedTimeIndex}
                   selectedTimeIndex={selectedTimeIndex}
-                  setSelectedHour={setSelectedHour}
                 />
               );
             })}

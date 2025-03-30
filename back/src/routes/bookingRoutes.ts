@@ -1,13 +1,9 @@
 import express, {Request,Response} from 'express'
 import * as controllers from '../controllers/bookingController'
+import { checkToken } from '../middleware/auth'
 
 const router = express.Router()
 
-
-
-router.get('/getBookings',(req:Request,res:Response)=>{
-  controllers.getBookings(req,res)
-})
 
 router.post('/scheduleBooking',(req:Request,res:Response)=>{
   controllers.scheduleBooking(req,res)
@@ -15,12 +11,16 @@ router.post('/scheduleBooking',(req:Request,res:Response)=>{
 
 
 //admin
-router.post('/cancelBooking',(req:Request,res:Response)=>{
+router.get('/getConfirmedBookings', checkToken, (req: Request, res: Response) => {
+  controllers.getConfirmedBookings(req, res)
+})
+
+router.post('/cancelBooking', checkToken,(req:Request,res:Response)=>{
   controllers.cancelBooking(req,res)
 })
 
 
-router.put('/updateBooking',(req:Request,res:Response)=>{
+router.put('/updateBooking', checkToken,(req:Request,res:Response)=>{
   controllers.updateBooking(req,res)
 })
 
