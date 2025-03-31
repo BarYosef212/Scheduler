@@ -5,15 +5,15 @@ import { checkToken } from '../middleware/auth'
 const router = express.Router()
 
 
-router.get('/getAvailabilities', (req: Request, res: Response) => {
+router.get('/getAvailabilities/:userId', (req: Request, res: Response) => {
   controllers.getAvailabilities(req, res)
 })
 
-router.post('/createAvailabilities', checkToken, (req: Request, res: Response) => {
+router.post('/createAvailabilities/:userId', checkToken, (req: Request, res: Response) => {
   controllers.createAvailabilities(req, res)
 })
 
-router.delete('/deleteAvailabilities', checkToken,(req:Request,res:Response)=>{
+router.delete('/deleteAvailabilities/:userId', checkToken,(req:Request,res:Response)=>{
   controllers.deleteTimesFromAvailability(req,res)
 })
 

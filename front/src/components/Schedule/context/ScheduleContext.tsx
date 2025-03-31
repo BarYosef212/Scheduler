@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Availability } from '../../../types/modelTypes';
 import { getAvailabilities, getUser } from '../../../services/services';
+import { useParams } from 'react-router-dom';
 
 interface ValuesContextType {
   selectedDate: Date;
@@ -39,26 +40,26 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
+  const { userId } = useParams();
 
   useEffect(() => {
     setSelectedDate(new Date());
   }, [allAvailabilities]);
 
   useEffect(() => {
-    getUser('1').then((user) => setDaysExcluded(user?.daysExcluded || []));
+    if (userId)
+      getUser(userId).then((user) => setDaysExcluded(user?.daysExcluded || []));
   }, []);
 
-    useEffect(() => {
-      if (allAvailabilities.length == 0) {
-        getAvailabilities()
-          .then((times) => {
-            setAllAvailabilities(times);
-          })
-          .then(() => setIsLoadingTimesList(false));
-      }
-    }, []);
-
-   
+  useEffect(() => {
+    if (allAvailabilities.length == 0 && userId) {
+      getAvailabilities(userId)
+        .then((times) => {
+          setAllAvailabilities(times);
+        })
+        .then(() => setIsLoadingTimesList(false));
+    }
+  }, [userId]);
 
   return (
     <ScheduleContext.Provider

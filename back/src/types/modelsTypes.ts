@@ -3,7 +3,7 @@ import { BookingStatus } from '@prisma/client'
 export interface User {
   id: string,
   email: string,
-  name: string,
+  userName: string,
   password: string,
   daysExcluded: number[]
 }

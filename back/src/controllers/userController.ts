@@ -42,13 +42,13 @@ export const userLogout = async (req: Request, res: Response): Promise<Response>
 
 export const getUser = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { id } = req.query as { id: string };
-    if (!id) {
+    const { userId } = req.query as { userId: string };
+    if (!userId) {
       return res.status(400).json({
         message: GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED
       })
     }
-    const user = await service.getUser(id)
+    const user = await service.getUser(userId)
 
     if (!user) {
       return res.status(404).json({

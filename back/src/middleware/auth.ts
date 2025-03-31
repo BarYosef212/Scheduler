@@ -11,25 +11,27 @@ export const checkToken = (req: Request, res: Response, next: NextFunction): voi
 
   try {
     jwt.verify(token, process.env.JWT_SECRET as string);
-    next(); 
+    next();
   } catch (error) {
     console.error(JWT_MESSAGES.VERIFICATION_FAILED, error);
-    res.status(401).json({ message: JWT_MESSAGES.INVALID_TOKEN});
+    res.status(401).json({ message: JWT_MESSAGES.INVALID_TOKEN });
   }
 };
 
 export const isAuthenticated = (req: Request, res: Response) => {
   const token = req.cookies.token
+  const { userId } = req.params
   if (!token) {
-    return res.status(401).json({isAuth:false, message: JWT_MESSAGES.TOKEN_MISSING });
+    return res.status(401).json({ isAuth: false, message: JWT_MESSAGES.TOKEN_MISSING });
   }
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET as string);
-    return res.json({isAuth:true})
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {userId:string}
+    if (decoded.userId != userId) return res.status(401).json({message:JWT_MESSAGES.UNAUTHORIZED})
+    return res.json({ isAuth: true })
   } catch (error) {
     console.error(JWT_MESSAGES.VERIFICATION_FAILED, error);
-    return res.status(401).json({isAuth:false, message: JWT_MESSAGES.INVALID_TOKEN });
+    return res.status(401).json({ isAuth: false, message: JWT_MESSAGES.INVALID_TOKEN });
   }
 };
 

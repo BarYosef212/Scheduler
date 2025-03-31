@@ -6,6 +6,7 @@ import CalendarComp from '../../Schedule/Calendar/CalendarComp';
 import AppointmentLabel from './AppointmentLabel/AppointmentLabel';
 import { Loader } from '@mantine/core';
 import { useValuesAdmin } from '../context/AdminContext';
+import { useParams } from 'react-router-dom';
 
 const AppointmentsList = () => {
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
@@ -13,16 +14,16 @@ const AppointmentsList = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [scheduledDates, setScheduledDates] = useState<Date[]>([]);
   const { isLoading, setIsLoading } = useValuesAdmin();
-
-  const { setStep,setAllTimes,allTimes } = useValuesAdmin();
+  const { setStep, setAllTimes, allTimes } = useValuesAdmin();
+  const {userId} = useParams()
 
   useEffect(() => {
     services
-      .getBookings()
+      .getConfirmedBookingsById(userId||"")
       .then((list) => setAllBookings(list))
       .then(() => setIsLoading(false));
 
-    services.getAvailabilities().then((list) => setAllTimes(list));
+    services.getAvailabilities(userId || '').then((list) => setAllTimes(list));
   }, []);
 
   useEffect(() => {
@@ -32,7 +33,6 @@ const AppointmentsList = () => {
   useEffect(() => {
     setScheduledDates(allBookings.map((booking) => booking.date));
   }, [allBookings]);
-
 
   return (
     <>

@@ -1,22 +1,25 @@
 import { PrismaClient } from "@prisma/client";
 import { Booking } from '../types/modelsTypes'
 import { addTimeToAvailability, deleteTimeFromAvailability, getAvailabilityByDate } from "./availabilitiesServices";
+import { BookingStatus } from "@prisma/client";
+import dayjs from "dayjs";
+
 const prisma = new PrismaClient()
 
 export const scheduleBooking = async (data: Booking): Promise<Booking | null> => {
   try {
-    const { date, hour } = data
+    const { date, hour,userId } = data
 
-    const availability = await getAvailabilityByDate(date)
+    const availability = await getAvailabilityByDate(date, userId)
     if (!availability || !availability.times.includes(hour)) return null
+
 
     const booking = await prisma.booking.create({
       data
     })
 
     if (!booking) return null
-    const deleted = await deleteTimeFromAvailability(date, hour)
-
+    const deleted = await deleteTimeFromAvailability(date, hour, userId)
     if (!deleted) {
       await prisma.booking.delete({ where: { id: booking.id } });
       return null;
@@ -32,19 +35,21 @@ export const scheduleBooking = async (data: Booking): Promise<Booking | null> =>
 
 export const cancelBooking = async (booking: Booking): Promise<boolean> => {
   try {
-    const { id, date, hour } = booking
-    const added = await addTimeToAvailability(date, hour)
+    const { id, date, hour,userId } = booking
+    const newDate = new Date(date)
+    const added = await addTimeToAvailability(newDate, hour,userId)
     if (!added) return false
+
 
     const updatedBooking = await prisma.booking.update({
       where: { id: id },
       data: {
-        status: 'CANCELLED'
+        status: BookingStatus.CANCELLED
       }
     })
 
     if (!updatedBooking) {
-      await deleteTimeFromAvailability(date, hour);
+      await deleteTimeFromAvailability(date, hour,userId);
       return false;
     }
     return true
@@ -56,9 +61,9 @@ export const cancelBooking = async (booking: Booking): Promise<boolean> => {
 }
 
 
-export const getAllBookings = async (): Promise<Booking[] | null> => {
+export const getAllBookingsById = async (id: string): Promise<Booking[] | null> => {
   try {
-    const bookings = await prisma.booking.findMany({})
+    const bookings = await prisma.booking.findMany({ where: { userId: id } })
     if (!bookings) {
       return null
     }
@@ -73,39 +78,47 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
   try {
 
     newBooking.date = new Date(newBooking.date)
+    oldBooking.date = new Date(oldBooking.date)
+    if (!(dayjs(newBooking.date).isSame(oldBooking.date)) || newBooking.hour != oldBooking.hour) {
+      newBooking.updatedFromId = oldBooking.id
 
-    const updatedOldBooking = await prisma.booking.update({
-      where: { id: oldBooking.id },
-      data: {
-        status: "UPDATED",
+      const updatedOldBooking = await prisma.booking.update({
+        where: { id: oldBooking.id },
+        data: {
+          status: BookingStatus.UPDATED,
+        }
+      })
+
+      if (!updatedOldBooking) {
+        return false
       }
-    })
 
-    if (!updatedOldBooking) {
-      return false
+      newBooking.createdAt = undefined
+      const booked = await scheduleBooking(newBooking)
+      if (!booked) {
+        await prisma.booking.update({
+          where: { id: oldBooking.id },
+          data: {
+            status: BookingStatus.CONFIRMED,
+          }
+        })
+        return false
+      }
+
+      const canceled = await cancelBooking(oldBooking)
+      if (!canceled) {
+        await prisma.booking.update({
+          where: { id: oldBooking.id },
+          data: {
+            status: BookingStatus.CONFIRMED,
+          }
+        })
+        await prisma.booking.delete({ where: { id: booked.id } })
+        return false
+      }
     }
-
-    const booked = await scheduleBooking(newBooking)
-    if (!booked) {
-      await prisma.booking.update({
-        where: { id: oldBooking.id },
-        data: {
-          status: "CONFIRMED",
-        }
-      })
-      return false
-    }
-
-    const canceled = await cancelBooking(oldBooking)
-    if (!canceled) {
-      await prisma.booking.update({
-        where: { id: oldBooking.id },
-        data: {
-          status: "CONFIRMED",
-        }
-      })
-      await prisma.booking.delete({ where: { id: booked.id } })
-      return false
+    else {
+      await prisma.booking.update({ where: { id: oldBooking.id }, data: { ...newBooking } })
     }
 
     return true

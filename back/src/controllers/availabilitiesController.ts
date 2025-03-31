@@ -7,7 +7,8 @@ const prisma = new PrismaClient()
 
 export const getAvailabilities = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const availabilities = await service.getAvailabilities()
+    const{userId} = req.params
+    const availabilities = await service.getAvailabilities(userId)
     if (availabilities) {
       return res.json({ availabilities })
     }
@@ -23,7 +24,8 @@ export const getAvailabilities = async (req: Request, res: Response): Promise<Re
 
 export const createAvailabilities = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { times, date, userId }: { times: string[], date: Date, userId: string } = req.body
+    const { times, date }: { times: string[], date: Date, userId: string } = req.body
+    const {userId} = req.params
 
     if (!times || !date || !userId || !(times.length > 0)) {
       return res.status(400).json({
@@ -31,7 +33,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
       })
     }
 
-    const overlaps = await service.checkIfAvailabilitiesOverlapping(date, times)
+    const overlaps = await service.checkIfAvailabilitiesOverlapping(date, times,userId)
 
     if (overlaps) return res.status(400).json({ message: AVAILABILITY_MESSAGES.OVERLAP_AVAILABILITIES })
 
@@ -56,6 +58,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
 
 export const deleteTimesFromAvailability = async (req: Request, res: Response) => {
   const { date, startTime, endTime } = req.query
+  const {userId} = req.params
   if (!date || !startTime || !endTime) {
     return res.status(400).json({ message: GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED});
   }
@@ -68,7 +71,7 @@ export const deleteTimesFromAvailability = async (req: Request, res: Response) =
   }
 
   try {
-    await service.deleteTimesFromAvailability(parsedDate, parsedStartTime, parsedEndTime);
+    await service.deleteTimesFromAvailability(parsedDate, parsedStartTime, parsedEndTime,userId);
     res.json({ message: AVAILABILITY_MESSAGES.REMOVE_SUCCESS });
   } catch (error) {
     console.error(error);

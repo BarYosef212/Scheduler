@@ -22,11 +22,11 @@ export const userLogin = async (email: string, password: string): Promise<string
   }
 }
 
-export const getUser = async (id: string): Promise<User | null> => {
+export const getUser = async (userId: string): Promise<User | null> => {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: id,
+        id: userId,
       },
     });
     return user

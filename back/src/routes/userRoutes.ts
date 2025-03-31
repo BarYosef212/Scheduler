@@ -16,8 +16,7 @@ router.post('/logout', (req: Request, res: Response) => {
   controllers.userLogout(req, res)
 })
 
-
-router.get('/protected',(req:Request,res:Response)=>{
+router.get('/auth/protected/:userId',(req:Request,res:Response)=>{
   isAuthenticated(req,res)
 })
 

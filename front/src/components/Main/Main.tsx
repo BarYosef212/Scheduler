@@ -1,13 +1,21 @@
-import { logout } from '../../services/services';
+import { useParams } from 'react-router-dom';
+import { isAuthenticated, logout } from '../../services/services';
 import { useValuesGlobal } from '../GlobalContext/GlobalContext';
 import './Main.css';
+import { useState, useEffect } from 'react';
 
 const Main: React.FC = () => {
-  const { isAuth } = useValuesGlobal();
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const { userId } = useParams();
 
-  const logOut = async()=>{
-    await logout()
-  }
+  useEffect(() => {
+    isAuthenticated(userId || '').then(setIsAuth);
+  }, []);
+
+  const logOut = async () => {
+    await logout();
+  };
+
   return (
     <main
       className='main-page'
@@ -15,12 +23,12 @@ const Main: React.FC = () => {
     >
       <h1 className='main-main-label'>ARIEL HAIR STYLE</h1>
       <h4>ספר גברים, ניתן לקבוע תור כעת</h4>
-      <a href='/Schedule' className='btn main-main-btn'>
+      <a href={`/Schedule/${userId}`} className='btn main-main-btn'>
         קבע תור
       </a>
       {isAuth && (
         <>
-          <a href='/admin' className='btn main-main-btn'>
+          <a href={`/admin/${userId}`} className='btn main-main-btn'>
             Admin
           </a>
 

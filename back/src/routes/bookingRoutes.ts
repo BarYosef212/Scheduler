@@ -5,13 +5,13 @@ import { checkToken } from '../middleware/auth'
 const router = express.Router()
 
 
-router.post('/scheduleBooking',(req:Request,res:Response)=>{
+router.post('/scheduleBooking/:userId',(req:Request,res:Response)=>{
   controllers.scheduleBooking(req,res)
 })
 
 
 //admin
-router.get('/getConfirmedBookings', checkToken, (req: Request, res: Response) => {
+router.get('/getConfirmedBookings/:userId', checkToken, (req: Request, res: Response) => {
   controllers.getConfirmedBookings(req, res)
 })
 

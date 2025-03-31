@@ -7,7 +7,7 @@ export const BOOKING_MESSAGES = {
 
 export const GENERAL_MESSAGES = {
   UNKNOWN_ERROR: "An unknown error occurred.",
-  PARAMETERS_NOT_PROVIDED:"Required parameters were not provided",
+  PARAMETERS_NOT_PROVIDED: "Required parameters were not provided",
   API_ERROR: "API request failed.",
 };
 
@@ -19,15 +19,16 @@ export const AVAILABILITY_MESSAGES = {
 };
 
 export const USER_MESSAGE = {
-  NOT_FOUND:"User not found",
-  LOGIN:"LOGGED IN",
-  LOGOUT:"User logged out",
-  INVALID_DETAILS:"אחד הפרטים שהוזנו שגויים"
+  NOT_FOUND: "User not found",
+  LOGIN: "LOGGED IN",
+  LOGOUT: "User logged out",
+  INVALID_DETAILS: "אחד הפרטים שהוזנו שגויים"
 }
 
 export const JWT_MESSAGES = {
-  AUTH_HEADER_MISSING:"Authorization header is missing", 
+  AUTH_HEADER_MISSING: "Authorization header is missing",
   TOKEN_MISSING: "Token is missing",
   VERIFICATION_FAILED: "Token verification failed: ",
-  INVALID_TOKEN: "Invalid token"
+  INVALID_TOKEN: "Invalid token",
+  UNAUTHORIZED: "אינך מורשה!"
 }

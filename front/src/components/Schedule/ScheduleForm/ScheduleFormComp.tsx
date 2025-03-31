@@ -7,6 +7,7 @@ import { Box, LoadingOverlay } from '@mantine/core';
 import useValidateForm from '../../hooks/useValidateForm';
 import useFormReducer from '../../hooks/useFormReducer';
 import { useValuesSchedule } from '../context/ScheduleContext';
+import { useParams } from 'react-router-dom';
 
 const ScheduleForm: React.FC = () => {
   const { state, dispatch } = useFormReducer();
@@ -20,6 +21,8 @@ const ScheduleForm: React.FC = () => {
   const { selectedDate, selectedHour, nextStep, setErrorConfirmMessage } =
     useValuesSchedule();
 
+  const {userId} = useParams()
+
   const dateStr = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
   }/${selectedDate.getFullYear()}`;
@@ -28,7 +31,7 @@ const ScheduleForm: React.FC = () => {
     e.preventDefault();
     if (error) return;
     let data = {
-      userId: '1',
+      userId:userId,
       date: selectedDate as Date,
       hour: selectedHour,
       clientName: state.fullName,
@@ -37,7 +40,8 @@ const ScheduleForm: React.FC = () => {
     };
     toggle();
     try {
-      await scheduleBooking(data as Booking).then(()=>nextStep())
+      if (userId)
+        await scheduleBooking(data as Booking ,userId).then(() => nextStep());
     } catch (error: any) {
       setErrorConfirmMessage(error.response.data.message);
       nextStep();

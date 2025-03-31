@@ -3,9 +3,9 @@ import { Availability } from '../types/modelsTypes'
 const prisma = new PrismaClient()
 
 
-export const getAvailabilities = async (): Promise<Availability[]> => {
+export const getAvailabilities = async (userId: string): Promise<Availability[]> => {
   try {
-    const availabilities = await prisma.availability.findMany({})
+    const availabilities = await prisma.availability.findMany({ where: { userId: userId } })
     return availabilities
   } catch (error) {
     console.error("error in getAvailabilitiesService: ", error)
@@ -13,9 +13,9 @@ export const getAvailabilities = async (): Promise<Availability[]> => {
   }
 }
 
-export const deleteTimeFromAvailability = async (date: Date, hour: string): Promise<boolean> => {
+export const deleteTimeFromAvailability = async (date: Date, hour: string, userId: string): Promise<boolean> => {
   try {
-    const availability = await getAvailabilityByDate(date)
+    const availability = await getAvailabilityByDate(date, userId)
     if (!availability) return false
     const newTimes = availability.times.filter((hourValue) => hourValue != hour)
     await prisma.availability.update({
@@ -35,9 +35,9 @@ export const deleteTimeFromAvailability = async (date: Date, hour: string): Prom
 }
 
 
-export const deleteTimesFromAvailability = async (date: Date, start: Date, end: Date): Promise<boolean> => {
+export const deleteTimesFromAvailability = async (date: Date, start: Date, end: Date, userId: string): Promise<boolean> => {
   try {
-    const availability = await getAvailabilityByDate(date);
+    const availability = await getAvailabilityByDate(date, userId);
     if (!availability) return false;
 
     const startTime = formatTime(start);
@@ -76,16 +76,13 @@ const formatTime = (time: Date): string => {
   return `${hours}:${minutes}`;
 };
 
-const updateAvailability = async (availability: any) => {
-  console.log('Updated availability:', availability);
-  return true;
-};
 
 
 
-export const addTimeToAvailability = async (date: Date, hour: string): Promise<boolean> => {
+
+export const addTimeToAvailability = async (date: Date, hour: string, userId: string): Promise<boolean> => {
   try {
-    const availability = await getAvailabilityByDate(date)
+    const availability = await getAvailabilityByDate(date, userId)
     if (!availability) return false
     if (availability.times.includes(hour)) return false
 
@@ -113,11 +110,11 @@ export const addTimeToAvailability = async (date: Date, hour: string): Promise<b
   }
 }
 
-export const checkIfAvailabilitiesOverlapping = async (date: Date, times: string[]): Promise<boolean> => {
+export const checkIfAvailabilitiesOverlapping = async (date: Date, times: string[], userId: string): Promise<boolean> => {
   try {
     const existingAvailabilities = await prisma.availability.findFirst({
       select: { times: true },
-      where: { date: date }
+      where: { userId: userId, date: date }
     })
 
     if (!existingAvailabilities) return false
@@ -164,7 +161,7 @@ export const checkIfAvailabilitiesOverlapping = async (date: Date, times: string
 
 export const createAvailabilities = async (times: string[], date: Date, userId: string): Promise<boolean> => {
   try {
-    const availability = await prisma.availability.findFirst({ where: { date: date } })
+    const availability = await prisma.availability.findFirst({ where: { userId:userId,date: date } })
     if (availability) {
       const newTimes = availability.times
       newTimes.push(...times)
@@ -189,7 +186,7 @@ export const createAvailabilities = async (times: string[], date: Date, userId: 
 
 }
 
-export const getAvailabilityByDate = async (date: Date): Promise<Availability | null> => {
+export const getAvailabilityByDate = async (date: Date, userId: string): Promise<Availability | null> => {
   try {
     const utcDate = new Date(
       Date.UTC(
@@ -201,6 +198,7 @@ export const getAvailabilityByDate = async (date: Date): Promise<Availability | 
 
     const availability = await prisma.availability.findFirst({
       where: {
+        userId: userId,
         date: utcDate
       }
     })

@@ -1,6 +1,6 @@
 export interface Booking {
   id?: string,
-  status: 'CONFIRMED' | 'CANCELLED',
+  status?: 'CONFIRMED' | 'CANCELLED',
   date: Date,
   hour: string,
   userId: string,
@@ -23,7 +23,7 @@ export interface Availability {
 export interface User {
   id: string,
   email: string,
-  name: string,
+  userName: string,
   password: string,
   daysExcluded: number[]
 }

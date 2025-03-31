@@ -21,6 +21,8 @@
     "@prisma/extension-pulse": "1.2.2",
     "@types/body-parser": "^1.19.5",
     "@types/node": "22.13.5",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "axios": "^1.8.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
@@ -30,13 +32,15 @@
     "express": "^4.21.2",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
-    "npm": "^11.1.0"
+    "npm": "^11.1.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/axios": "^0.9.36",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
+    "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
     "prisma": "^6.5.0",
     "ts-node": "10.9.2",

@@ -5,6 +5,7 @@ import { TimeInput } from '@mantine/dates';
 import { createAvailabilities, deleteAvailabilities } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
 import ToggleButton from '../../ToggleButton/ToggleButton';
+import { useParams } from 'react-router-dom';
 
 const LoadingBooking: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -14,6 +15,7 @@ const LoadingBooking: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [isAdd, setIsAdd] = useState<boolean>(true);
   const { setStep } = useValuesAdmin();
+  const {userId} = useParams()
 
   const pickerControl = (r: React.RefObject<HTMLInputElement | null>) => {
     return (
@@ -44,7 +46,7 @@ const LoadingBooking: React.FC = () => {
         setError('אינטרוול זמן לא תקין, מקבל ערכים בין 1 - 1200');
       } else {
         setError('');
-        await createAvailabilities(interval, startTime, endTime, selectedDate);
+        await createAvailabilities(interval, startTime, endTime, selectedDate,userId||"");
       }
     }
     else{
@@ -59,7 +61,7 @@ const LoadingBooking: React.FC = () => {
         return;
       } else {
         setError('');
-        await deleteAvailabilities(startTime, endTime, selectedDate);
+        await deleteAvailabilities(startTime, endTime, selectedDate,userId||"");
       }
     }
   };

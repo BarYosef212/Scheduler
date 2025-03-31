@@ -2,22 +2,31 @@ import './App.css';
 import Main from './components/Main/Main';
 import { ScheduleProvider } from './components/Schedule/context/ScheduleContext';
 import { AdminProvider } from './components/Admin/context/AdminContext';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useParams,
+} from 'react-router-dom';
 import AdminControl from './components/Admin/AdminControl';
 import Login from './components/Login/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import MultiForm from './components/Schedule/MultiForm';
-import { GlobalProvider } from './components/GlobalContext/GlobalContext';
+import {
+  GlobalProvider,
+  useValuesGlobal,
+} from './components/GlobalContext/GlobalContext';
 
 function App() {
   return (
-    <GlobalProvider>
-      <Router>
+    <Router>
+      {/* change to AuthProvider */}
+      <GlobalProvider>
         <Routes>
-          <Route path='/' element={<Main />} />
-          <Route path='/Login' element={<Login />} />
+          <Route path='/:userId' element={<Main />} />
+          <Route path='/Login/:userId' element={<Login />} />
           <Route
-            path='/admin'
+            path='/admin/:userId'
             element={
               <ProtectedRoute>
                 <AdminProvider>
@@ -27,7 +36,7 @@ function App() {
             }
           />
           <Route
-            path='/Schedule'
+            path='/Schedule/:userId'
             element={
               <ScheduleProvider>
                 <MultiForm />
@@ -36,8 +45,8 @@ function App() {
           />
           <Route path='*' element={<p>404! There is nothing here!</p>} />
         </Routes>
-      </Router>
-    </GlobalProvider>
+      </GlobalProvider>
+    </Router>
   );
 }
 

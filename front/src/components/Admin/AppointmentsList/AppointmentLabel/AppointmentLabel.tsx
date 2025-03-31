@@ -6,6 +6,7 @@ import ModalForm from './ModalForm/ModalForm';
 import { useState } from 'react';
 import { Loader } from '@mantine/core';
 import { useValuesAdmin } from '../../context/AdminContext';
+import { useParams } from 'react-router-dom';
 
 
 interface appointmentLabelProps {
@@ -23,7 +24,7 @@ const AppointmentLabel: React.FC<appointmentLabelProps> = ({
   const {isLoading,setIsLoading} = useValuesAdmin()
 
 
-  const cratedDate = new Date(createdAt)
+  const createdDate = new Date(createdAt);
 
  const formattedDate = new Intl.DateTimeFormat('he-IL', {
    weekday: 'long',
@@ -32,7 +33,7 @@ const AppointmentLabel: React.FC<appointmentLabelProps> = ({
    year: 'numeric',
    hour: '2-digit',
    minute: '2-digit',
- }).format(cratedDate);
+ }).format(createdDate);
 
   const cancelBooking = async () => {
     try {
