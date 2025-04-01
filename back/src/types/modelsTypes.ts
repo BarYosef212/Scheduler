@@ -6,6 +6,8 @@ export interface User {
   userName: string,
   password: string,
   daysExcluded: number[]
+  logo: string|null,
+  title: string
 }
 
 export interface Booking {

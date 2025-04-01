@@ -17,6 +17,8 @@ interface ValuesContextType {
   setErrorConfirmMessage: (args: string) => void;
   daysExcluded: number[];
   setDaysExcluded: (args: number[]) => void;
+  selectedTimeIndex: number;
+  setSelectedTimeIndex: (args: number) => void;
   nextStep: () => void;
   prevStep: () => void;
 }
@@ -33,6 +35,7 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
   const [allAvailabilities, setAllAvailabilities] = useState<Availability[]>(
     [],
   );
+  const [selectedTimeIndex, setSelectedTimeIndex] = useState<number>(-1);
   const [isLoadingTimesList, setIsLoadingTimesList] = useState<boolean>(true);
   const [step, setStep] = useState<number>(1);
   const [errorConfirmMessage, setErrorConfirmMessage] = useState<string>('');
@@ -61,6 +64,8 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [userId]);
 
+  useEffect(()=>{setSelectedTimeIndex(-1)},[selectedDate])
+
   return (
     <ScheduleContext.Provider
       value={{
@@ -77,6 +82,8 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
         setErrorConfirmMessage,
         daysExcluded,
         setDaysExcluded,
+        selectedTimeIndex,
+        setSelectedTimeIndex,
         nextStep,
         prevStep,
       }}

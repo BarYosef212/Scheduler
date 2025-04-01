@@ -3,17 +3,13 @@ import './TimeLabel.css';
 interface TimeLabelProp {
   time: String;
   index: number;
-  selectedTimeIndex: number;
-  setSelectedTimeIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const TimeLabel: React.FC<TimeLabelProp> = ({
   time,
   index,
-  selectedTimeIndex,
-  setSelectedTimeIndex,
 }) => {
-  const {setSelectedHour} = useValuesSchedule()
+  const {setSelectedHour,setSelectedTimeIndex,selectedTimeIndex} = useValuesSchedule()
   const dividedTime = time.split('-');
   const hour = dividedTime[0];
   const minute = dividedTime[1];

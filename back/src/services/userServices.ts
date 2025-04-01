@@ -35,17 +35,3 @@ export const getUser = async (userId: string): Promise<User | null> => {
     throw error
   }
 }
-
-
-// export const getBookingsOfUserService = async (email: string): Promise<Booking[]> => {
-//   const user = await getUser(email)
-//   if (!user) return []
-
-//   const bookings = await prisma.booking.findMany({
-//     where: {
-//       userId: user.id
-//     }
-//   })
-
-//   return bookings
-// }

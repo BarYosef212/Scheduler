@@ -21,7 +21,7 @@ const ScheduleForm: React.FC = () => {
   const { selectedDate, selectedHour, nextStep, setErrorConfirmMessage } =
     useValuesSchedule();
 
-  const {userId} = useParams()
+  const { userId } = useParams();
 
   const dateStr = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
@@ -31,7 +31,7 @@ const ScheduleForm: React.FC = () => {
     e.preventDefault();
     if (error) return;
     let data = {
-      userId:userId,
+      userId: userId,
       date: selectedDate as Date,
       hour: selectedHour,
       clientName: state.fullName,
@@ -41,7 +41,7 @@ const ScheduleForm: React.FC = () => {
     toggle();
     try {
       if (userId)
-        await scheduleBooking(data as Booking ,userId).then(() => nextStep());
+        await scheduleBooking(data as Booking, userId).then(() => nextStep());
     } catch (error: any) {
       setErrorConfirmMessage(error.response.data.message);
       nextStep();
@@ -110,7 +110,7 @@ const ScheduleForm: React.FC = () => {
             className='submit-btn btn-navigation btn'
             onClick={handleSubmit}
           >
-            שלח
+            קבע תור
           </button>
         </form>
       </Box>

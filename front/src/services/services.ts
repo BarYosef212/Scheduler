@@ -7,14 +7,25 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  config.withCredentials=true
+  config.withCredentials = true
   return config;
 });
 
 
 export const filterAvailabilitiesHours = (allTimes: Availability[], dateSelected: Date): string[] => {
+  const today = new Date()
+  const currentHour = today.getHours()
+  const currentMinute = new Date().getMinutes()
   const date = allTimes.filter((e) => dayjs(e.date).isSame(dateSelected, "day"))
-  return date[0]?.times ||[]
+  const times = date[0]?.times || []
+  if (dayjs(today).isSame(dateSelected,"day")) {
+    const filteredTimes = times.filter((time) => {
+      const [hour, minute] = time.split('-')[0].split(':').map(Number)
+      return hour > currentHour || ((hour == currentHour) && (minute > currentMinute))
+    })
+    return filteredTimes
+  }
+  return times
 }
 
 export const filterBookingsByDate = (bookings: Booking[], dateSelected: Date): Booking[] => {
@@ -23,7 +34,7 @@ export const filterBookingsByDate = (bookings: Booking[], dateSelected: Date): B
   return sortedBookings
 }
 
-export const getAvailabilities = async (userId:string): Promise<Availability[]> => {
+export const getAvailabilities = async (userId: string): Promise<Availability[]> => {
   try {
     const res = await api.get<{ availabilities: Availability[] }>(`/getAvailabilities/${userId}`);
     const list = res.data.availabilities || []
@@ -34,7 +45,7 @@ export const getAvailabilities = async (userId:string): Promise<Availability[]> 
   }
 }
 
-export const scheduleBooking = async (data: Booking,userId:string): Promise<number | void> => {
+export const scheduleBooking = async (data: Booking, userId: string): Promise<number | void> => {
   try {
     const { date } = data
     const utcDate = new Date(
@@ -53,7 +64,7 @@ export const scheduleBooking = async (data: Booking,userId:string): Promise<numb
   }
 }
 
-export const getConfirmedBookingsById = async (userId:string): Promise<Booking[]> => {
+export const getConfirmedBookingsById = async (userId: string): Promise<Booking[]> => {
   try {
     const response = await api.get<{ bookings: Booking[] }>(`/getConfirmedBookings/${userId}`);
     return response.data.bookings;
@@ -65,7 +76,7 @@ export const getConfirmedBookingsById = async (userId:string): Promise<Booking[]
 
 export const cancelBookingService = async (booking: Booking) => {
   try {
-    const response = await api.post('/cancelBooking', {booking})
+    const response = await api.post('/cancelBooking', { booking })
     return response.data
   } catch (error) {
     console.log(error)
@@ -85,7 +96,7 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
   }
 }
 
-export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date,userId:string) => {
+export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date, userId: string) => {
   try {
 
     const utcDate = new Date(
@@ -105,7 +116,7 @@ export const createAvailabilities = async (interval: number, startTime: Date, en
   }
 }
 
-export const deleteAvailabilities = async (startTime: Date, endTime: Date, date: Date,userId:string) => {
+export const deleteAvailabilities = async (startTime: Date, endTime: Date, date: Date, userId: string) => {
   try {
     const response = await api.delete<{ message: string }>(`/deleteAvailabilities/${userId}`, { params: { startTime, endTime, date } })
     return response.data.message
@@ -135,7 +146,7 @@ export const login = async (email: string, password: string): Promise<void> => {
 
 export const logout = async (): Promise<string> => {
   try {
-    const response = await api.post<{message:string}>('/logout')
+    const response = await api.post<{ message: string }>('/logout')
     return response.data.message
   } catch (error) {
     console.log(error)
@@ -173,11 +184,11 @@ const sortBookings = (bookings: Booking[]) => {
 };
 
 
-export const isAuthenticated = async(userId:string):Promise<boolean>=>{
+export const isAuthenticated = async (userId: string): Promise<boolean> => {
   try {
-    const response = await api.get<{isAuth:boolean}>(`/auth/protected/${userId}`)
+    const response = await api.get<{ isAuth: boolean }>(`/auth/protected/${userId}`)
     return response.data.isAuth
-  } catch (error:any) {
+  } catch (error: any) {
     return error.data.isAuth
   }
 }

@@ -14,13 +14,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MultiForm from './components/Schedule/MultiForm';
 import {
   GlobalProvider,
-  useValuesGlobal,
 } from './components/GlobalContext/GlobalContext';
 
 function App() {
   return (
     <Router>
-      {/* change to AuthProvider */}
       <GlobalProvider>
         <Routes>
           <Route path='/:userId' element={<Main />} />

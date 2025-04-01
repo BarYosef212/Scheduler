@@ -6,9 +6,10 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <>
-      <button onClick={() => setStep(-1)}>חזור</button>
-      <div className='admin-main'>
+      <button className="back-button" onClick={() => setStep(-1)}>חזור</button>
+      <div className="admin-main">
         <button
+          className="admin-button"
           onClick={() => {
             setStep(2);
           }}
@@ -16,11 +17,12 @@ const AdminDashboard: React.FC = () => {
           תורים מוזמנים
         </button>
         <button
+          className="admin-button"
           onClick={() => {
             setStep(3);
           }}
         >
-           ניהול זמינויות
+          ניהול זמינויות
         </button>
       </div>
     </>
@@ -28,3 +30,4 @@ const AdminDashboard: React.FC = () => {
 };
 
 export default AdminDashboard;
+

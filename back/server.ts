@@ -38,7 +38,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${port}`,
+        url: `http://localhost:${PORT}`,
       },
     ],
     components: {
@@ -51,7 +51,7 @@ const swaggerOptions = {
       },
     },
   },
-  apis: ['./routes/*.js'],
+  apis: ['./src/routes/*.ts'],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);

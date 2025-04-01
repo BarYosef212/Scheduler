@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Container, Box, Typography } from '@mui/material';
 import { login } from '../../services/services';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface LoginFormInputs {
   email: string;
@@ -11,6 +11,7 @@ interface LoginFormInputs {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const {userId} = useParams()
 
   const {
     register,
@@ -21,7 +22,7 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       await login(data.email, data.password);
-      navigate('/');
+      navigate(`/${userId}`);
     } catch (error) {
       console.log(error);
     }

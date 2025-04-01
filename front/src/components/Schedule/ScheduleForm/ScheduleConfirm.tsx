@@ -7,8 +7,6 @@ const ScheduleConfirm: React.FC = () => {
   }/${selectedDate.getFullYear()}`;
 
   const { errorConfirmMessage, nextStep } = useValuesSchedule();
-  {
-  }
   return (
     <>
       <button className='btn-navigation btn' onClick={nextStep}>חזור למסך הראשי</button>

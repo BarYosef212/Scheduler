@@ -5,24 +5,86 @@ import { checkToken } from '../middleware/auth'
 const router = express.Router()
 
 
+/**
+ * @swagger
+ * /api/scheduleBooking/{userId}:
+ *   post:
+ *     tags:
+ *       - Booking
+ *     summary: Schedule a new booking for a user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     responses:
+ *       200:
+ *         description: Booking scheduled successfully
+ */
 router.post('/scheduleBooking/:userId',(req:Request,res:Response)=>{
   controllers.scheduleBooking(req,res)
 })
 
-
-//admin
+/**
+ * @swagger
+ * /api/getConfirmedBookings/{userId}:
+ *   get:
+ *     tags:
+ *       - Booking
+ *     summary: Get confirmed bookings for a user
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of confirmed bookings
+ */
 router.get('/getConfirmedBookings/:userId', checkToken, (req: Request, res: Response) => {
   controllers.getConfirmedBookings(req, res)
 })
 
+/**
+ * @swagger
+ * /api/cancelBooking:
+ *   post:
+ *     tags:
+ *       - Booking
+ *     summary: Cancel an existing booking
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Booking canceled successfully
+ */
 router.post('/cancelBooking', checkToken,(req:Request,res:Response)=>{
   controllers.cancelBooking(req,res)
 })
 
-
+/**
+ * @swagger
+ * /api/updateBooking:
+ *   put:
+ *     tags:
+ *       - Booking
+ *     summary: Update an existing booking
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Booking updated successfully
+ */
 router.put('/updateBooking', checkToken,(req:Request,res:Response)=>{
   controllers.updateBooking(req,res)
 })
+
 
 
 
