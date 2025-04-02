@@ -17,7 +17,7 @@ export interface Booking {
   hour: string,
   userId: string,
   clientName: string,
-  clientEmail?: string | null,
+  clientEmail: string,
   clientPhone: string,
   createdAt?: Date
   updatedFromId?: string | null

@@ -71,7 +71,6 @@ export const updateUser = async (req: Request, res: Response): Promise<Response>
   const {data } = req.body
   const {userId} = req.params
 
-  console.log("useriD:", userId,"data: ",data)
   try {
     const updated = await service.updateUser(userId, data)
     if (!updated) return res.status(400).json({ message: USER_MESSAGE.UPDATE_FAILED })

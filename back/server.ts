@@ -18,10 +18,12 @@ app.use(bodyParser.json());
 app.use(cookieParser())
 app.use(express.json());
 
+
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true
 }))
+
 
 app.use('/api', bookingRoutes)
 app.use('/api', availabilitiesRoutes)
@@ -62,6 +64,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.listen(PORT, () => {
   console.log(`Server connected on http://localhost:${PORT}/`)
 })
+
+// app.listen(3000, "0.0.0.0", () => console.log("Server running on port 3000"));
 
 
 
