@@ -136,11 +136,13 @@ export const getUser = async (userId: string): Promise<User | null> => {
   }
 }
 
-export const login = async (email: string, password: string): Promise<void> => {
+export const login = async (email: string, password: string): Promise<string> => {
   try {
-    const response = await api.post<{ token: string }>('/login', { email, password })
-  } catch (error) {
+    const response = await api.post<{ message: string }>('/login', { email, password })
+    return response.data.message
+  } catch (error:any) {
     console.log(error)
+    throw error.response.data.message
   }
 }
 
@@ -189,6 +191,16 @@ export const isAuthenticated = async (userId: string): Promise<boolean> => {
     const response = await api.get<{ isAuth: boolean }>(`/auth/protected/${userId}`)
     return response.data.isAuth
   } catch (error: any) {
-    return error.data.isAuth
+    return error.response.data.isAuth
+  }
+}
+
+export const updateUser = async(userId:string,data:Partial<User>):Promise<string>=>{
+  try {
+    const response = await api.put<{message:string}>(`/updateUser/${userId}`,{data})
+    return response.data.message
+  } catch (error:any) {
+    console.log(error)
+    return error.response.data.message
   }
 }

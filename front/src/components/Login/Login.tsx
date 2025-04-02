@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Container, Box, Typography } from '@mui/material';
 import { login } from '../../services/services';
@@ -11,7 +11,9 @@ interface LoginFormInputs {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const {userId} = useParams()
+  const { userId } = useParams();
+  const [error, setError] = useState<string>('');
+  const [isLoading,setIsLoading] = useState<boolean>(false)
 
   const {
     register,
@@ -21,10 +23,15 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      await login(data.email, data.password);
+      setIsLoading(true)
+      setError("")
+      const response = await login(data.email, data.password);
       navigate(`/${userId}`);
     } catch (error) {
       console.log(error);
+      setError(error as string);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -56,6 +63,8 @@ const Login: React.FC = () => {
             helperText={errors.password?.message}
           />
 
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {isLoading&& <p>...אנא המתן</p>}
           <Button
             type='submit'
             variant='contained'

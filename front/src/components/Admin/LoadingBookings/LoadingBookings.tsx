@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import CalendarComp from '../../Schedule/Calendar/CalendarComp';
 import { ActionIcon, Button, NumberInput } from '@mantine/core';
+import styles from './LoadingBookings.module.css';
 import { TimeInput } from '@mantine/dates';
-import { createAvailabilities, deleteAvailabilities } from '../../../services/services';
+import {
+  createAvailabilities,
+  deleteAvailabilities,
+} from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
 import ToggleButton from '../../ToggleButton/ToggleButton';
 import { useParams } from 'react-router-dom';
@@ -15,7 +19,7 @@ const LoadingBooking: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [isAdd, setIsAdd] = useState<boolean>(true);
   const { setStep } = useValuesAdmin();
-  const {userId} = useParams()
+  const { userId } = useParams();
 
   const pickerControl = (r: React.RefObject<HTMLInputElement | null>) => {
     return (
@@ -23,11 +27,25 @@ const LoadingBooking: React.FC = () => {
         variant='subtle'
         color='gray'
         onClick={() => r.current?.showPicker()}
+        className={styles.pickerIcon}
       >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          width='16'
+          height='16'
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='currentColor'
+          strokeWidth='2'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+        >
+          <circle cx='12' cy='12' r='10' />
+          <polyline points='12 6 12 12 16 14' />
+        </svg>
       </ActionIcon>
     );
   };
-
 
   const handleSubmit = async () => {
     if (isAdd) {
@@ -46,10 +64,15 @@ const LoadingBooking: React.FC = () => {
         setError('אינטרוול זמן לא תקין, מקבל ערכים בין 1 - 1200');
       } else {
         setError('');
-        await createAvailabilities(interval, startTime, endTime, selectedDate,userId||"");
+        await createAvailabilities(
+          interval,
+          startTime,
+          endTime,
+          selectedDate,
+          userId || '',
+        );
       }
-    }
-    else{
+    } else {
       if (!refStart.current?.value || !refEnd.current?.value) {
         setError('נא למלא את כל השדות');
         return;
@@ -61,68 +84,111 @@ const LoadingBooking: React.FC = () => {
         return;
       } else {
         setError('');
-        await deleteAvailabilities(startTime, endTime, selectedDate,userId||"");
+        await deleteAvailabilities(
+          startTime,
+          endTime,
+          selectedDate,
+          userId || '',
+        );
       }
     }
   };
 
   return (
-    <>
-      <button
-        onClick={() => {
-          setStep(1);
-        }}
-      >
-        חזור
-      </button>
-      <h2>{isAdd?'טעינת תורים יומית':'ביטול תורים יומי'}</h2>
-      <CalendarComp
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <button
+          className={styles.backButton}
+          onClick={() => {
+            setStep(1);
+          }}
+        >
+          חזור
+        </button>
+        <h2 className={styles.title}>
+          {isAdd ? 'טעינת תורים יומית' : 'ביטול תורים יומי'}
+        </h2>
+      </div>
 
-      <TimeInput
-        withAsterisk
-        label='שעת התחלה'
-        ref={refStart}
-        rightSection={pickerControl(refStart)}
-      />
+      <div className={styles.content}>
+        <div className={styles.calendarSection}>
+          <div className={styles.calendarWrapper}>
+            <CalendarComp
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+            />
+          </div>
+        </div>
 
-      <TimeInput
-        withAsterisk
-        label='שעת סיום'
-        ref={refEnd}
-        rightSection={pickerControl(refEnd)}
-      />
+        <div className={styles.formSection}>
+          <div className={styles.formGroup}>
+            <TimeInput
+              withAsterisk
+              label='שעת התחלה'
+              ref={refStart}
+              rightSection={pickerControl(refStart)}
+              className={styles.timeInput}
+              classNames={{
+                label: styles.inputLabel,
+                input: styles.input,
+              }}
+            />
+          </div>
 
-      <NumberInput
-        disabled={!isAdd}
-        radius='md'
-        label='אינטרוול זמן (בדקות)'
-        withAsterisk
-        value={interval}
-        onChange={(value) => {
-          setInterval(Number(value));
-        }}
-      />
+          <div className={styles.formGroup}>
+            <TimeInput
+              withAsterisk
+              label='שעת סיום'
+              ref={refEnd}
+              rightSection={pickerControl(refEnd)}
+              className={styles.timeInput}
+              classNames={{
+                label: styles.inputLabel,
+                input: styles.input,
+              }}
+            />
+          </div>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div className={styles.formGroup}>
+            <NumberInput
+              disabled={!isAdd}
+              radius='md'
+              label='אינטרוול זמן (בדקות)'
+              withAsterisk
+              value={interval}
+              onChange={(value) => {
+                setInterval(Number(value));
+              }}
+              className={styles.numberInput}
+              classNames={{
+                label: styles.inputLabel,
+                input: styles.input,
+              }}
+            />
+          </div>
 
-      <ToggleButton
-        right={'הוספה'}
-        left={'ביטול'}
-        isRight={isAdd}
-        setIsRight={setIsAdd}
-      />
+          {error && <p className={styles.errorMessage}>{error}</p>}
 
-      <Button
-        onClick={handleSubmit}
-        variant='gradient'
-        gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
-      >
-        {isAdd?'טען':'בטל'} תורים
-      </Button>
-    </>
+          <div className={styles.toggleContainer}>
+            <ToggleButton
+              right={'הוספה'}
+              left={'ביטול'}
+              isRight={isAdd}
+              setIsRight={setIsAdd}
+            />
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            variant='gradient'
+            gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
+            className={styles.submitButton}
+          >
+            {isAdd ? 'טען' : 'בטל'} תורים
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 

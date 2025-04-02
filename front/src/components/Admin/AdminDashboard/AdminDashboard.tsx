@@ -1,33 +1,43 @@
+import React from 'react';
 import { useValuesAdmin } from '../context/AdminContext';
-import './AdminDashboard.css';
+import styles from './AdminDashboard.module.css';
 
 const AdminDashboard: React.FC = () => {
   const { setStep } = useValuesAdmin();
 
   return (
-    <>
-      <button className="back-button" onClick={() => setStep(-1)}>חזור</button>
-      <div className="admin-main">
-        <button
-          className="admin-button"
-          onClick={() => {
-            setStep(2);
-          }}
-        >
-          תורים מוזמנים
+    <div className={styles.dashboardContainer}>
+      <header className={styles.dashboardHeader}>
+        <h1 className={styles.dashboardTitle}>לוח ניהול</h1>
+        <button className={styles.backButton} onClick={() => setStep(-1)}>
+          &larr; חזור
         </button>
-        <button
-          className="admin-button"
-          onClick={() => {
-            setStep(3);
-          }}
-        >
-          ניהול זמינויות
-        </button>
+      </header>
+
+      <div className={styles.adminGrid}>
+        <div className={styles.adminCard} onClick={() => setStep(2)}>
+          <h2 className={styles.cardTitle}>תורים מוזמנים</h2>
+          <p className={styles.cardDescription}>
+            צפייה וניהול תורים שנקבעו במערכת
+          </p>
+        </div>
+
+        <div className={styles.adminCard} onClick={() => setStep(3)}>
+          <h2 className={styles.cardTitle}>ניהול זמינויות</h2>
+          <p className={styles.cardDescription}>
+            הגדרת זמנים פנויים וחסומים במערכת
+          </p>
+        </div>
+
+        <div className={styles.adminCard} onClick={() => setStep(4)}>
+          <h2 className={styles.cardTitle}>הגדרות</h2>
+          <p className={styles.cardDescription}>
+            הגדרות מנהל עסק
+          </p>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
 export default AdminDashboard;
-

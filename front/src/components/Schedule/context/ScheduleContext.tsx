@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Availability } from '../../../types/modelTypes';
-import { getAvailabilities, getUser } from '../../../services/services';
+import { getAvailabilities } from '../../../services/services';
 import { useParams } from 'react-router-dom';
 
 interface ValuesContextType {
@@ -15,8 +15,6 @@ interface ValuesContextType {
   step: number;
   errorConfirmMessage: string;
   setErrorConfirmMessage: (args: string) => void;
-  daysExcluded: number[];
-  setDaysExcluded: (args: number[]) => void;
   selectedTimeIndex: number;
   setSelectedTimeIndex: (args: number) => void;
   nextStep: () => void;
@@ -39,7 +37,6 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoadingTimesList, setIsLoadingTimesList] = useState<boolean>(true);
   const [step, setStep] = useState<number>(1);
   const [errorConfirmMessage, setErrorConfirmMessage] = useState<string>('');
-  const [daysExcluded, setDaysExcluded] = useState<number[]>([]);
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
@@ -49,11 +46,7 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
     setSelectedDate(new Date());
   }, [allAvailabilities]);
 
-  useEffect(() => {
-    if (userId)
-      getUser(userId).then((user) => setDaysExcluded(user?.daysExcluded || []));
-  }, []);
-
+  
   useEffect(() => {
     if (allAvailabilities.length == 0 && userId) {
       getAvailabilities(userId)
@@ -80,8 +73,6 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
         step,
         errorConfirmMessage,
         setErrorConfirmMessage,
-        daysExcluded,
-        setDaysExcluded,
         selectedTimeIndex,
         setSelectedTimeIndex,
         nextStep,

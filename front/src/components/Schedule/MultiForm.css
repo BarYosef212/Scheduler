@@ -1,0 +1,25 @@
+ Button.btn {
+   background: var(--gradient-primary);
+   color: white;
+   border: none;
+   border-radius: var(--border-radius);
+   padding: 10px 20px;
+   font-size: 16px;
+   font-weight: 500;
+   transition: var(--transition);
+   display: inline-block;
+   text-align: center;
+   margin-bottom: 15px;
+   text-decoration: none;
+ }
+
+ .btn:hover {
+   background: var(--gradient-gold);
+   transform: translateY(-2px);
+   box-shadow: var(--box-shadow-sm);
+ }
+
+ .btn:active {
+   transform: translateY(0);
+   box-shadow: none;
+ }

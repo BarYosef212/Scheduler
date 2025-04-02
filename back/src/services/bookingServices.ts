@@ -8,7 +8,14 @@ const prisma = new PrismaClient()
 
 export const scheduleBooking = async (data: Booking): Promise<Booking | null> => {
   try {
-    const { date, hour,userId } = data
+    const { date, hour,userId,clientPhone } = data
+
+    const existOnSameDay = await prisma.booking.findFirst({
+      where: { clientPhone: clientPhone, date: date,status: BookingStatus.CONFIRMED }
+    })
+    if (existOnSameDay) {
+      return null
+    }
 
     const availability = await getAvailabilityByDate(date, userId)
     if (!availability || !availability.times.includes(hour)) return null
@@ -88,10 +95,11 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
           status: BookingStatus.UPDATED,
         }
       })
-
       if (!updatedOldBooking) {
         return false
       }
+
+
 
       newBooking.createdAt = undefined
       const booked = await scheduleBooking(newBooking)
@@ -104,6 +112,7 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
         })
         return false
       }
+
 
       const canceled = await cancelBooking(oldBooking)
       if (!canceled) {

@@ -9,6 +9,7 @@ export const GENERAL_MESSAGES = {
   UNKNOWN_ERROR: "An unknown error occurred.",
   PARAMETERS_NOT_PROVIDED: "Required parameters were not provided",
   API_ERROR: "API request failed.",
+  SUCCESS:"הפעולה בוצעה בהצלחה"
 };
 
 export const AVAILABILITY_MESSAGES = {
@@ -19,10 +20,11 @@ export const AVAILABILITY_MESSAGES = {
 };
 
 export const USER_MESSAGE = {
-  NOT_FOUND: "User not found",
-  LOGIN: "LOGGED IN",
-  LOGOUT: "User logged out",
-  INVALID_DETAILS: "אחד הפרטים שהוזנו שגויים"
+  NOT_FOUND: "המשתמש לא נמצא",
+  LOGIN: "התחברת בהצלחה",
+  LOGOUT: "התנתקת בהצלחה",
+  INVALID_DETAILS: "השם משתמש או הסיסמה שהזנת שגויים, אנא נסה שוב",
+  UPDATE_FAILED:"העדכון נכשל אנא נסה שוב",
 }
 
 export const JWT_MESSAGES = {

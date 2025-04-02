@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import TimeLabel from './TimeLabel/TimeLabel';
-import './TimesList.css';
+import styles from './TimesList.module.css';
 import { Loader } from '@mantine/core';
 import { filterAvailabilitiesHours } from '../../../services/services';
 import { useValuesSchedule } from '../context/ScheduleContext';
@@ -22,21 +22,23 @@ const TimesList: React.FC = () => {
   }, [selectedDate]);
 
   return (
-    <>
+    <div className={styles.timesContainer}>
       {isLoadingTimesList ? (
-        <Loader />
+        <div className={styles.loaderContainer}>
+          <Loader color='var(--gold)' size='md' />
+        </div>
       ) : (
-        <div className='timesList-timeLabel-list'>
+        <div className={styles.timesList}>
           {timesList && timesList.length > 0 ? (
             timesList.map((time, index) => {
               return <TimeLabel key={uuid()} index={index} time={time} />;
             })
           ) : (
-            <p>אין זמינויות עבור יום זה</p>
+            <p className={styles.noTimes}>אין זמינויות עבור יום זה</p>
           )}
         </div>
       )}
-    </>
+    </div>
   );
 };
 

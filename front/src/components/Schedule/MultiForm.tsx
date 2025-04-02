@@ -3,8 +3,9 @@ import Main from '../Main/Main';
 import Schedule from './Schedule';
 import ScheduleConfirm from './ScheduleForm/ScheduleConfirm';
 import ScheduleForm from './ScheduleForm/ScheduleFormComp';
+import './MultiForm.css'
 
-const MultiForm: React.FC<{}> = () => {
+const MultiForm: React.FC = () => {
   const { step, prevStep } = useValuesSchedule();
 
   const getStepForm = (step: number) => {
@@ -23,7 +24,7 @@ const MultiForm: React.FC<{}> = () => {
   return (
     <>
       {step > 0 && step < 3 && (
-        <button className='btn-navigation btn' onClick={prevStep}>
+        <button className='btn' onClick={prevStep}>
           חזור
         </button>
       )}

@@ -3,6 +3,7 @@ import LoadingBooking from './LoadingBookings/LoadingBookings';
 import AppointmentsList from './AppointmentsList/AppointmentsList';
 import { useValuesAdmin } from './context/AdminContext';
 import Main from '../Main/Main';
+import Preferences from './Preferences/Preferences';
 const AdminControl: React.FC = () => {
   const { step } = useValuesAdmin();
 
@@ -14,6 +15,8 @@ const AdminControl: React.FC = () => {
         return <AppointmentsList />;
       case 3:
         return <LoadingBooking />;
+      case 4:
+        return <Preferences/>
       default:
         return <Main />;
     }
