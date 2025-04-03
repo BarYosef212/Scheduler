@@ -10,6 +10,8 @@ import {
 import { useValuesAdmin } from '../context/AdminContext';
 import ToggleButton from '../../ToggleButton/ToggleButton';
 import { useParams } from 'react-router-dom';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 const LoadingBooking: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -63,14 +65,37 @@ const LoadingBooking: React.FC = () => {
       } else if (interval <= 0 || interval > 1200) {
         setError('אינטרוול זמן לא תקין, מקבל ערכים בין 1 - 1200');
       } else {
-        setError('');
-        await createAvailabilities(
-          interval,
-          startTime,
-          endTime,
-          selectedDate,
-          userId || '',
-        );
+        try {
+           setError('');
+           const response = await createAvailabilities(
+             interval,
+             startTime,
+             endTime,
+             selectedDate,
+             userId || '',
+           );
+
+           console.log(response)
+           Toastify({
+             text: response,
+             duration: 3000,
+            style: {
+              background: 'linear-gradient(to right, #00b09b, #96c93d)',
+            },
+            
+           }).showToast();
+           
+        } catch (error:any) {
+          console.log(error)
+             Toastify({
+             text: error || 'An error occurred',
+             className: 'error',
+             style: {
+               background: 'linear-gradient(to right, #ff0000, #ff5f6d)',
+             },
+             }).showToast();
+        }
+       
       }
     } else {
       if (!refStart.current?.value || !refEnd.current?.value) {

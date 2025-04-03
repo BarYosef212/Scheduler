@@ -4,6 +4,9 @@ import { Checkbox, TextInput, Button, Loader } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import { getUser, updateUser } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
+
 
 interface BarberPreferences {
   daysExcluded: number[];
@@ -93,11 +96,25 @@ const Preferences: React.FC = () => {
     try {
       setIsLoading(true);
       setError('');
-      await updateUser(userId || "", preferences);
+      const response = await updateUser(userId || "", preferences);
       setSuccess(true);
-    } catch (err) {
-      console.error('Error updating preferences:', err);
+      Toastify({
+        text: response,
+        duration: 3000,
+        gravity: "top",
+        position: "center",
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+      }).showToast();
+    } catch (error:any) {
+      console.error('Error updating preferences:', error);
       setError('אירעה שגיאה בשמירת ההעדפות');
+      Toastify({
+        text: error,
+        duration: 3000,
+        gravity: "top",
+        position: "center",
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
     } finally {
       setIsLoading(false);
     }

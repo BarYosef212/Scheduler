@@ -40,7 +40,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
 
     const created = await service.createAvailabilities(times, date, userId)
 
-    if (created) return res.sendStatus(200)
+    if (created) return res.json({message:GENERAL_MESSAGES.SUCCESS})
     else {
       return res.status(400).json({
         message: GENERAL_MESSAGES.API_ERROR

@@ -96,7 +96,7 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
   }
 }
 
-export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date, userId: string) => {
+export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date, userId: string):Promise<string> => {
   try {
 
     const utcDate = new Date(
@@ -109,10 +109,11 @@ export const createAvailabilities = async (interval: number, startTime: Date, en
     const times = createListOfTimes(interval, startTime, endTime)
 
     const response = await api.post<{ message: string }>(`/createAvailabilities/${userId}`, { times, date: utcDate })
+    console.log(response)
     return response.data.message
   } catch (error: any) {
     console.log(error)
-    return error.response.data.message
+    throw error.response.data.message
   }
 }
 
