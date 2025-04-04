@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useParams } from 'react-router-dom';
 interface ValuesContextType {
-
+  userId:string
 }
 
 const GlobalContext = createContext<ValuesContextType>({} as ValuesContextType);
@@ -8,10 +9,12 @@ const GlobalContext = createContext<ValuesContextType>({} as ValuesContextType);
 const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [logo, setLogo] = useState<string | null>(null);
+
+  const { userId = '' } = useParams();
   return (
     <GlobalContext.Provider
       value={{
+        userId 
       }}
     >
       {children}

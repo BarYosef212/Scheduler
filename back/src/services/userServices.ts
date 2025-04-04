@@ -22,14 +22,25 @@ export const userLogin = async (email: string, password: string): Promise<string
   }
 }
 
-export const getUser = async (userId: string): Promise<User | null> => {
+export const getUser = async (userId: string): Promise<User> => {
   try {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
-    return user
+    return user as User;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const updateUser = async(userId:string,data:Partial<User>):Promise<boolean>=>{
+  try {
+    const updated = await prisma.user.update({where:{id:userId},data})
+    if (updated) return true
+    return false
   } catch (error) {
     console.log(error)
     throw error

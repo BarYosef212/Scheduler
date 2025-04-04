@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button, Container, Box, Typography } from '@mui/material';
 import { login } from '../../services/services';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useValuesGlobal } from '../GlobalContext/GlobalContext';
 
 interface LoginFormInputs {
   email: string;
@@ -11,7 +12,9 @@ interface LoginFormInputs {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const {userId} = useParams()
+  const { userId } = useValuesGlobal();
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
     register,
@@ -21,10 +24,15 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
+      setIsLoading(true);
+      setError('');
       await login(data.email, data.password);
       navigate(`/${userId}`);
     } catch (error) {
       console.log(error);
+      setError(error as string);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,6 +64,8 @@ const Login: React.FC = () => {
             helperText={errors.password?.message}
           />
 
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {isLoading && <p>...אנא המתן</p>}
           <Button
             type='submit'
             variant='contained'

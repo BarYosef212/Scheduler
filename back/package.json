@@ -14,8 +14,6 @@
     "@mantine/core": "^7.17.1",
     "@mantine/dates": "^7.17.1",
     "@mantine/hooks": "^7.17.1",
-    "@mui/material": "^6.4.6",
-    "@mui/x-date-pickers": "^7.27.1",
     "@prisma/client": "^6.5.0",
     "@prisma/extension-accelerate": "1.2.2",
     "@prisma/extension-pulse": "1.2.2",
@@ -32,6 +30,7 @@
     "express": "^4.21.2",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.0",
     "npm": "^11.1.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
@@ -42,6 +41,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/nodemailer": "^6.4.17",
     "prisma": "^6.5.0",
     "ts-node": "10.9.2",
     "typescript": "5.7.3"

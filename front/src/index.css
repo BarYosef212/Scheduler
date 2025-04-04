@@ -1,68 +1,93 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap');
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-.btn:link, .btn:visited {
-  border:none;
-  background-color: none;
-  padding:12px 24px;
-  cursor: pointer;
-  color:#000;
-  font-weight: 100;
-  display: inline-block;
-}
-
-
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    --primary-color: #b8860b;
+    --primary-hover: #9c7205;
+    --gold: #d4af37;
+    --gold-light: #ffd700;
+    --gold-dark: #85754e;
+    --champagne: #f7e7ce;
+    --honey: #e6c34c;
+    --sand: #c2b280;
+    --amber: #ffbf00;
+    --caramel: #c68e17;
+    --wheat: #f5deb3;
+    --khaki: #bdb76b;
+    --tan: #d2b48c;
+    --cream: #f5f5dc;
+    --ivory: #fffff0;
+    --chai: #b08968;
+    --mocha: #967259;
+    --text-primary: #27272a;
+    --text-secondary: #4a3728;
+    --text-accent: #9c6644;
+    --spacing-xs: 8px;
+    --spacing-sm: 16px;
+    --spacing-md: 24px;
+    --spacing-lg: 32px;
+    --spacing-xl: 48px;
+    --border-radius: 8px;
+    --transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    --box-shadow-sm: 0 4px 6px rgba(62, 39, 35, 0.2);
+    --box-shadow-md: 0 10px 25px -5px rgba(62, 39, 35, 0.25);
+    --box-shadow-lg: 0 20px 25px -5px rgba(62, 39, 35, 0.2), 0 10px 10px -5px rgba(62, 39, 35, 0.1);
+    --gradient-primary: linear-gradient(135deg, #b8860b 0%, #9c7205 100%);
+    --gradient-gold: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #d4af37 100%);
+    --gradient-honey: linear-gradient(135deg, #e6c34c 0%, #ffd700 50%, #e6c34c 100%);
+    --gradient-sand: linear-gradient(135deg, #c2b280 0%, #d2b48c 50%, #c2b280 100%);
   }
-  a:hover {
-    color: #747bff;
+
+  a {
+    font-weight: 500;
+    text-decoration: inherit;
   }
-  button {
-    background-color: #f9f9f9;
+
+  html,
+  body {
+    overflow: scroll;
+    font-family: "Assistant", sans-serif !important;
   }
-}
+
+  body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 3.2em;
+    line-height: 1.1;
+  }
+
+  .btn:link,
+  .btn:visited {
+    border: none;
+    background-color: none;
+    padding: 12px 24px;
+    color: #000;
+    font-weight: 100;
+    display: inline-block;
+  }
+
+
+  button:hover {
+    border-color: #646cff;
+  }
+
+  button:focus,
+  button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      color: #213547;
+      background-color: #ffffff;
+    }
+
+    button {
+      background-color: #f9f9f9;
+    }
+  }

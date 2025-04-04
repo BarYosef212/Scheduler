@@ -1,0 +1,152 @@
+.appointmentCard {
+  position: relative;
+  display: flex;
+  background-color: var(--cream);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+  transition: var(--transition);
+  border: 1px solid var(--sand);
+  overflow: hidden;
+}
+
+
+
+.contentContainer {
+  flex: 1;
+  direction: rtl;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--sand);
+  padding-bottom: var(--spacing-xs);
+}
+
+.clientName {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.appointmentTime {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: var(--champagne);
+}
+
+.detailsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.detailLabel {
+  min-width: 80px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.detailValue {
+  color: var(--text-primary);
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-sm);
+}
+
+.cancelButton,
+.editButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1rem;
+}
+
+.cancelButton {
+  background-color: #fde2e2;
+  color: #e53e3e;
+}
+
+.cancelButton:hover {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.editButton {
+  background-color: #e6f0ff;
+  color: var(--primary-color);
+}
+
+.editButton:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+:global(.mantine-Modal-root) {
+  z-index: 1000;
+}
+
+:global(.mantine-Modal-inner) {
+  padding: 0;
+}
+
+:global(.mantine-Modal-content) {
+  background: transparent;
+  box-shadow: none;
+  border-radius: var(--border-radius);
+  overflow: visible !important;
+}
+
+:global(.mantine-LoadingOverlay-root) {
+  z-index: 1200;
+  background-color: rgba(247, 231, 206, 0.75);
+}
+
+@media (max-width: 768px) {
+  .appointmentCard {
+    flex-direction: column;
+  }
+
+  .actionButtons {
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: var(--spacing-sm);
+    margin-right: 0;
+  }
+
+  .headerSection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .appointmentTime {
+    align-self: flex-end;
+  }
+}

@@ -1,13 +1,13 @@
 import React from 'react';
-import './ScheduleForm.css';
+import { Box, LoadingOverlay } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { useParams } from 'react-router-dom';
 import { scheduleBooking } from '../../../services/services';
 import { Booking } from '../../../types/modelTypes';
-import { useDisclosure } from '@mantine/hooks';
-import { Box, LoadingOverlay } from '@mantine/core';
 import useValidateForm from '../../hooks/useValidateForm';
 import useFormReducer from '../../hooks/useFormReducer';
 import { useValuesSchedule } from '../context/ScheduleContext';
-import { useParams } from 'react-router-dom';
+import styles from './ScheduleForm.module.css';
 
 const ScheduleForm: React.FC = () => {
   const { state, dispatch } = useFormReducer();
@@ -17,12 +17,9 @@ const ScheduleForm: React.FC = () => {
     state.email,
   );
   const [visible, { toggle }] = useDisclosure(false);
-
   const { selectedDate, selectedHour, nextStep, setErrorConfirmMessage } =
     useValuesSchedule();
-
   const { userId } = useParams();
-
   const dateStr = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
   }/${selectedDate.getFullYear()}`;
@@ -30,18 +27,24 @@ const ScheduleForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (error) return;
-    let data = {
-      userId: userId,
+
+    const bookingData = {
+      userId,
       date: selectedDate as Date,
       hour: selectedHour,
       clientName: state.fullName,
       clientEmail: state.email,
       clientPhone: state.phoneNumber,
     };
+
     toggle();
+
     try {
-      if (userId)
-        await scheduleBooking(data as Booking, userId).then(() => nextStep());
+      if (userId) {
+        await scheduleBooking(bookingData as Booking, userId).then(() =>
+          nextStep(),
+        );
+      }
     } catch (error: any) {
       setErrorConfirmMessage(error.response.data.message);
       nextStep();
@@ -49,72 +52,79 @@ const ScheduleForm: React.FC = () => {
   };
 
   return (
-    <>
-      <Box pos='relative'>
-        <LoadingOverlay
-          visible={visible}
-          loaderProps={{
-            children: <span style={{ fontSize: '18px' }}>...אנא המתן</span>,
-          }}
-        />
-        <form className='schedule-form'>
-          <h2 className='form-title'>קבע תור</h2>
-          <p className='form-subtitle'>
-            תור בתאריך <b>{dateStr}</b> בשעה <b>{selectedHour}</b>
-          </p>
+    <Box pos='relative' className={styles.container}>
+      <LoadingOverlay
+        visible={visible}
+        loaderProps={{
+          children: <span className={styles.loadingText}>אנא המתן...</span>,
+        }}
+      />
 
-          <div className='form-input-group'>
-            <label className='form-label'>שם מלא</label>
-            <input
-              type='text'
-              value={state.fullName}
-              onChange={(e) =>
-                dispatch({ type: 'SET_NAME', payload: e.target.value })
-              }
-              className='form-input name-form-input'
-              required
-            />
-          </div>
+      <form className={styles.form}>
+        <h2 className={styles.title}>קבע תור</h2>
+        <p className={styles.subtitle}>
+          תור בתאריך <strong>{dateStr}</strong> בשעה{' '}
+          <strong>{selectedHour}</strong>
+        </p>
 
-          <div className='form-input-group'>
-            <label className='form-label'>אימייל</label>
-            <input
-              type='email'
-              value={state.email}
-              onChange={(e) =>
-                dispatch({ type: 'SET_EMAIL', payload: e.target.value })
-              }
-              className='form-input'
-              placeholder='לא חובה'
-            />
-          </div>
+        <div className={styles.inputGroup}>
+          <label className={styles.label} htmlFor='fullName'>
+            שם מלא
+          </label>
+          <input
+            id='fullName'
+            type='text'
+            value={state.fullName}
+            onChange={(e) =>
+              dispatch({ type: 'SET_NAME', payload: e.target.value })
+            }
+            className={styles.input}
+            required
+          />
+        </div>
 
-          <div className='form-input-group'>
-            <label className='form-label'>מספר טלפון</label>
-            <input
-              type='tel'
-              value={state.phoneNumber}
-              onChange={(e) =>
-                dispatch({ type: 'SET_PHONE', payload: e.target.value })
-              }
-              className='form-input'
-              required
-            />
+        <div className={styles.inputGroup}>
+          <label className={styles.label} htmlFor='email'>
+            אימייל
+          </label>
+          <input
+            id='email'
+            type='email'
+            value={state.email}
+            onChange={(e) =>
+              dispatch({ type: 'SET_EMAIL', payload: e.target.value })
+            }
+            className={styles.input}
+          />
+        </div>
 
-            {error && <span className='error-text'>{error}</span>}
-          </div>
+        <div className={styles.inputGroup}>
+          <label className={styles.label} htmlFor='phone'>
+            מספר טלפון
+          </label>
+          <input
+            id='phone'
+            type='tel'
+            value={state.phoneNumber}
+            onChange={(e) =>
+              dispatch({ type: 'SET_PHONE', payload: e.target.value })
+            }
+            className={styles.input}
+            required
+          />
+          {error && <span className={styles.errorText}>{error}</span>}
+        </div>
 
-          <button
-            disabled={!!error || !state.fullName || !state.phoneNumber}
-            type='submit'
-            className='submit-btn btn-navigation btn'
-            onClick={handleSubmit}
-          >
-            קבע תור
-          </button>
-        </form>
-      </Box>
-    </>
+        <button
+          type='submit'
+          className={styles.submitBtn}
+          onClick={handleSubmit}
+          disabled={!!error ||!state.email||!state.fullName || !state.phoneNumber}
+        >
+          קבע תור
+        </button>
+      </form>
+    </Box>
   );
 };
 

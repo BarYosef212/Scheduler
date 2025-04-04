@@ -1,9 +1,10 @@
 import dayjs from 'dayjs';
 import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.css';
-import './CalendarComp.css';
-import { useValuesSchedule } from '../context/ScheduleContext';
-// https://mantine.dev/dates/calendar/?t=props
+import styles from './CalendarComp.module.css';
+import { useEffect, useState } from 'react';
+import { getUser } from '../../../services/services';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 interface CalendarCompProp {
   scheduledDates?: Date[];
@@ -14,11 +15,23 @@ interface CalendarCompProp {
 
 const CalendarComp: React.FC<CalendarCompProp> = ({
   scheduledDates = [],
-  minDate = new Date(),
+  minDate,
   selectedDate,
   setSelectedDate,
 }) => {
-  const { daysExcluded } = useValuesSchedule();
+  const [daysExcluded, setDaysExcluded] = useState<number[]>([]);
+  const { userId } = useValuesGlobal();
+
+  useEffect(() => {
+    try {
+      if (userId)
+        getUser(userId).then((user) =>
+          setDaysExcluded(user?.daysExcluded || []),
+        );
+    } catch (error) {
+      console.log(error);
+    } 
+  }, []);
 
   const excludeDates = (date: Date) => {
     return daysExcluded?.includes(date.getDay()) || false;
@@ -31,27 +44,32 @@ const CalendarComp: React.FC<CalendarCompProp> = ({
   };
 
   return (
-    <Calendar
-      excludeDate={excludeDates}
-      getDayProps={(dateSelected) => {
-        const formattedDate = dayjs(dateSelected).format('YYYY-MM-DD');
-        return {
-          selected: selectedDate
-            ? dayjs(dateSelected).isSame(selectedDate, 'date')
-            : false,
-          onClick: () => handleSelectDate(dateSelected),
-          className: scheduledDates
-            ?.map((date) => dayjs(date).format('YYYY-MM-DD'))
-            ?.includes(formattedDate)
-            ? 'booked-date'
-            : '',
-        };
-      }}
-      firstDayOfWeek={0}
-      weekendDays={[5, 6]}
-      defaultDate={new Date()}
-      minDate={minDate && new Date()}
-    />
+    <>
+      <div className={styles.calendarWrapper}>
+        <Calendar
+          className={styles.calendar}
+          getDayProps={(dateSelected) => {
+            const formattedDate = dayjs(dateSelected).format('YYYY-MM-DD');
+            const isBooked = scheduledDates
+              ?.map((date) => dayjs(date).format('YYYY-MM-DD'))
+              ?.includes(formattedDate);
+
+            return {
+              selected: selectedDate
+                ? dayjs(dateSelected).isSame(selectedDate, 'date')
+                : false,
+              onClick: () => handleSelectDate(dateSelected),
+              className: isBooked ? styles.bookedDate : '',
+            };
+          }}
+          excludeDate={excludeDates}
+          firstDayOfWeek={0}
+          weekendDays={[5, 6]}
+          defaultDate={new Date()}
+          minDate={minDate}
+        />
+      </div>
+    </>
   );
 };
 

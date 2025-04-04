@@ -6,8 +6,8 @@ export interface User {
   userName: string,
   password: string,
   daysExcluded: number[]
-  logo: string|null,
-  title: string
+  logo?: string,
+  title?: string
 }
 
 export interface Booking {
@@ -17,7 +17,7 @@ export interface Booking {
   hour: string,
   userId: string,
   clientName: string,
-  clientEmail?: string | null,
+  clientEmail: string,
   clientPhone: string,
   createdAt?: Date
   updatedFromId?: string | null

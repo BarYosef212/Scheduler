@@ -47,7 +47,7 @@ router.post('/scheduleBooking/:userId',(req:Request,res:Response)=>{
  *       200:
  *         description: List of confirmed bookings
  */
-router.get('/getConfirmedBookings/:userId', checkToken, (req: Request, res: Response) => {
+router.get('/getConfirmedBookings/:userId', (req: Request, res: Response) => {
   controllers.getConfirmedBookings(req, res)
 })
 

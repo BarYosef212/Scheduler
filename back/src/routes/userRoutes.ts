@@ -1,19 +1,20 @@
 import express, { NextFunction, Request, Response } from 'express'
 import * as controllers from '../controllers/userController'
 import {isAuthenticated } from '../middleware/auth'
+import { checkToken } from '../middleware/auth'
 
 const router = express.Router()
 /**
  * @swagger
- * /api/getUser/{id}:
+ * /api/getUser:
  *   get:
  *     tags:
  *       - User
  *     summary: Retrieve user details
  *     description: Fetches the details of a user by ID.
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: query
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
@@ -103,6 +104,50 @@ router.post('/logout', (req: Request, res: Response) => {
  */
 router.get('/auth/protected/:userId', (req: Request, res: Response) => {
   isAuthenticated(req, res)
+})
+
+
+/**
+ * @swagger
+ * /api/updateUser/{userId}:
+ *   put:
+ *     tags:
+ *       - User
+ *     summary: Update user details
+ *     description: Updates the details of a user by ID.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: The user's name.
+ *               email:
+ *                 type: string
+ *                 description: The user's email address.
+ *             required:
+ *               - name
+ *               - email
+ *     responses:
+ *       200:
+ *         description: User details updated successfully.
+ *       400:
+ *         description: Bad request.
+ *       401:
+ *         description: Unauthorized.
+ */
+router.put('/updateUser/:userId', checkToken,(req:Request,res:Response)=>{
+  controllers.updateUser(req,res)
 })
 
 export default router

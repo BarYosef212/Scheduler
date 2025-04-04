@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './ModalForm.css';
+import styles from './ModalForm.module.css';
 import { Availability, Booking } from '../../../../../types/modelTypes';
 import {
   filterAvailabilitiesHours,
@@ -70,77 +70,104 @@ const ModalForm: React.FC<ModalFormProps> = ({
   if (!isOpen) return null;
 
   return (
-    <>
-      <Box pos='relative'>
-        <LoadingOverlay visible={visible} loaderProps={{ children: message }} />
-        <h2 className='update-title-form'>עדכון תור</h2>
-        <form onSubmit={handleSubmit} className='modal-form'>
-          <label className='modal-label'>
-            <input
-              type='text'
-              name='clientName'
-              value={formData.clientName}
-              onChange={handleChange}
-              required
-              className='modal-input'
-              dir='rtl'
-            />
-            <span>:שם מלא</span>
-          </label>
-          <label className='modal-label'>
-            <input
-              type='tel'
-              name='clientPhone'
-              value={formData.clientPhone}
-              onChange={handleChange}
-              required
-              className='modal-input'
-            />
-            <span>:נייד</span>
-          </label>
-
-          <label className='modal-label'>
-            <input
-              name='date'
-              type='date'
-              value={new Date(formData.date).toISOString().split('T')[0]}
-              onChange={handleChange}
-            />
-            <span>:תאריך</span>
-          </label>
-
-          <label className='modal-label'>
-            <select
-              name='hour'
-              onChange={handleChange}
-              className='modal-input'
-              value={formData.hour}
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <Box pos='relative' className={styles.formContainer}>
+          <LoadingOverlay 
+            visible={visible} 
+            loaderProps={{ children: message }} 
+            className={styles.loadingOverlay}
+          />
+          <div className={styles.modalHeader}>
+            <h2 className={styles.updateTitle}>עדכון תור</h2>
+            <button 
+              className={styles.closeButton} 
+              onClick={onClose}
+              aria-label="Close"
             >
-              <option value='' disabled>
-                בחר שעה
-              </option>
-              {tempTimes &&
-                tempTimes.map((time, index) => (
-                  <option key={index}>{time}</option>
-                ))}
-            </select>
-            <span>:שעת התור</span>
-          </label>
-          {error && (
-            <p style={{ margin: '0', color: 'red', textAlign: 'center' }}>
-              {error}
-            </p>
-          )}
-
-          <div className='modal-actions'>
-            <button type='submit'>שמור</button>
-            <button type='button' onClick={onClose}>
-              ביטול
+              &#10005;
             </button>
           </div>
-        </form>
-      </Box>
-    </>
+          
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
+                <span>שם מלא</span>
+                <input
+                  type='text'
+                  name='clientName'
+                  value={formData.clientName}
+                  onChange={handleChange}
+                  required
+                  className={styles.input}
+                  dir='rtl'
+                />
+              </label>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
+                <span>נייד</span>
+                <input
+                  type='tel'
+                  name='clientPhone'
+                  value={formData.clientPhone}
+                  onChange={handleChange}
+                  required
+                  className={styles.input}
+                />
+              </label>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
+                <span>תאריך</span>
+                <input
+                  name='date'
+                  type='date'
+                  value={new Date(formData.date).toISOString().split('T')[0]}
+                  onChange={handleChange}
+                  className={styles.input}
+                />
+              </label>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>
+                <span>שעת התור</span>
+                <select
+                  name='hour'
+                  onChange={handleChange}
+                  className={styles.select}
+                  value={formData.hour}
+                >
+                  <option value='' disabled>
+                    בחר שעה
+                  </option>
+                  {tempTimes &&
+                    tempTimes.map((time, index) => (
+                      <option key={index}>{time}</option>
+                    ))}
+                </select>
+              </label>
+            </div>
+            
+            {error && (
+              <p className={styles.errorMessage}>
+                {error}
+              </p>
+            )}
+
+            <div className={styles.actions}>
+              <button type='submit' className={styles.saveButton}>שמור</button>
+              <button type='button' onClick={onClose} className={styles.cancelButton}>
+                ביטול
+              </button>
+            </div>
+          </form>
+        </Box>
+      </div>
+    </div>
   );
 };
 

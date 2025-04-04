@@ -1,67 +1,99 @@
-import { useParams } from 'react-router-dom';
 import { getUser, isAuthenticated, logout } from '../../services/services';
-import './Main.css';
 import { useState, useEffect } from 'react';
 import { Loader } from '@mantine/core';
+import styles from './styles.module.css';
+import { useValuesGlobal } from '../GlobalContext/GlobalContext';
 
 const Main: React.FC = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { userId } = useParams();
+  const {userId} = useValuesGlobal()
   const [title, setTitle] = useState<string>('');
   const [headTitle, setHeadtitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    isAuthenticated(userId || '').then(setIsAuth);
-    getUser(userId || '').then((user) => {
-      setTitle(user?.title || '');
-      setHeadtitle(user?.userName || '');
-      if (user?.logo) setLogo(user.logo);
-    });
-  }, []);
+    const fetchData = async () => {
+      try {
+        const authStatus = await isAuthenticated(userId);
+        setIsAuth(authStatus);
 
-  const logOut = async () => {
-    await logout();
-    window.location.reload();
+        const user = await getUser(userId);
+        if (user) {
+          setTitle(user.title || '');
+          setHeadtitle(user.userName || '');
+          if (user.logo) setLogo(user.logo);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      window.location.reload();
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles.pageLoaderContainer}>
+        <Loader color='var(--gold)' size='md' />
+      </div>
+    );
+  }
 
   return (
     <>
       {headTitle ? (
-        <main
-          className='main-page'
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px',
-            alignItems: 'center',
-          }}
-        >
-          {logo && (
-            <img
-              src={logo}
-              alt='Logo'
-              className='main-logo'
-              style={{ width: '170px', marginBottom: '16px' }}
-            />
-          )}
-          <h1 className='main-main-label'>{headTitle}</h1>
-          <h4>{title}</h4>
-          <a href={`/Schedule/${userId}`} className='btn main-main-btn'>
-            קבע תור
-          </a>
-          {isAuth && (
-            <>
-              <a href={`/admin/${userId}`} className='btn main-main-btn'>
-                Admin
+        <main className={styles.mainContainer}>
+          <div className={styles.contentWrapper}>
+            {logo && (
+              <div className={styles.logoContainer}>
+                <img src={logo} alt='Logo' className={styles.brandLogo} />
+              </div>
+            )}
+
+            <h1 className={styles.pageTitle}>{headTitle}</h1>
+            <h4 className={styles.pageSubtitle}>{title}</h4>
+
+            <div className={styles.buttonContainer}>
+              <a href={`/Schedule/${userId}`} className={styles.actionButton}>
+                קבע תור
               </a>
 
-              <button onClick={logOut}>logout</button>
-            </>
-          )}
+              {isAuth && (
+                <>
+                  <a
+                    href={`/admin/${userId}`}
+                    className={`${styles.actionButton} ${styles.actionButtonSecondary}`}
+                  >
+                    Admin
+                  </a>
+
+                  <button
+                    onClick={handleLogout}
+                    className={`${styles.actionButton} ${styles.actionButtonDanger}`}
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </main>
       ) : (
-        <Loader />
+        <div className={styles.pageLoaderContainer}>
+          <Loader color='var(--gold)' size='lg' />
+        </div>
       )}
     </>
   );

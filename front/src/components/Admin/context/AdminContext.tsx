@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Availability } from '../../../types/modelTypes';
 import * as services from '../../../services/services';
-import { useParams } from 'react-router-dom';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 interface ValuesContextType {
   step: number;
@@ -20,10 +20,10 @@ const AdminProvider: React.FC<{ children: React.ReactNode }> = ({
   const [step, setStep] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [allTimes, setAllTimes] = useState<Availability[]>([]);
-  const {userId} = useParams()
+  const {userId} = useValuesGlobal()
 
   useEffect(() => {
-    services.getAvailabilities(userId || '').then((list) => setAllTimes(list));
+    services.getAvailabilities(userId).then((list) => setAllTimes(list));
   }, []);
   
   return (

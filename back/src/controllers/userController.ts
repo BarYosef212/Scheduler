@@ -67,36 +67,16 @@ export const getUser = async (req: Request, res: Response): Promise<Response> =>
   }
 }
 
-// export const getActivityHoursForUser = async(req:Request,res:Response):Promise<void>=>{
-//   const {email} = req.query
-//   if(!email || typeof email!=='string')return
-//   const user = await getUser(email)
-//   if(user){
-//     res.json({
-//       start:user.workHoursStart,
-//       end:user.workHoursEnd,
-//       interval:user.appointmentIntervalInMinutes
-//     })
-//   }
-//   else{
-//     res.status(401).json({
-//       message:"Error loading activity hours"
-//     })
-//   }
-// }
+export const updateUser = async (req: Request, res: Response): Promise<Response> => {
+  const {data } = req.body
+  const {userId} = req.params
 
-// export const getBookingsOfUser = async(req:Request,res:Response):Promise<void>=>{
-//   const { email } = req.query
-//   if (!email || typeof email !== 'string') return
-//   const bookings = await getBookingsOfUserService(email)
-//   if (bookings) {
-//     res.json({
-//       bookings: bookings
-//     })
-//   }
-//   else {
-//     res.status(401).json({
-//       message: "Error loading user's bookings"
-//     })
-//   }
-// }
+  try {
+    const updated = await service.updateUser(userId, data)
+    if (!updated) return res.status(400).json({ message: USER_MESSAGE.UPDATE_FAILED })
+    return res.json({ message: GENERAL_MESSAGES.SUCCESS })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: GENERAL_MESSAGES.UNKNOWN_ERROR })
+  }
+}
