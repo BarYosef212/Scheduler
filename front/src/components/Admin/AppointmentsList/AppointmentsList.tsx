@@ -6,7 +6,7 @@ import CalendarComp from '../../Schedule/Calendar/CalendarComp';
 import AppointmentLabel from './AppointmentLabel/AppointmentLabel';
 import { Loader } from '@mantine/core';
 import { useValuesAdmin } from '../context/AdminContext';
-import { useParams } from 'react-router-dom';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 const AppointmentsList = () => {
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
@@ -15,16 +15,16 @@ const AppointmentsList = () => {
   const [scheduledDates, setScheduledDates] = useState<Date[]>([]);
   const { isLoading, setIsLoading } = useValuesAdmin();
   const { setStep, setAllTimes, allTimes } = useValuesAdmin();
-  const { userId } = useParams();
+  const { userId } = useValuesGlobal();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const confirmedBookings = await services.getConfirmedBookingsById(
-          userId || '',
+          userId,
         );
         setAllBookings(confirmedBookings);
-        const availabilities = await services.getAvailabilities(userId || '');
+        const availabilities = await services.getAvailabilities(userId);
         setAllTimes(availabilities);
       } catch (error) {
         console.error('Error fetching data:', error);

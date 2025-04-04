@@ -20,7 +20,6 @@ const ScheduleForm: React.FC = () => {
   const { selectedDate, selectedHour, nextStep, setErrorConfirmMessage } =
     useValuesSchedule();
   const { userId } = useParams();
-
   const dateStr = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
   }/${selectedDate.getFullYear()}`;
@@ -96,7 +95,6 @@ const ScheduleForm: React.FC = () => {
               dispatch({ type: 'SET_EMAIL', payload: e.target.value })
             }
             className={styles.input}
-            placeholder='לא חובה'
           />
         </div>
 
@@ -121,7 +119,7 @@ const ScheduleForm: React.FC = () => {
           type='submit'
           className={styles.submitBtn}
           onClick={handleSubmit}
-          disabled={!!error || !state.fullName || !state.phoneNumber}
+          disabled={!!error ||!state.email||!state.fullName || !state.phoneNumber}
         >
           קבע תור
         </button>

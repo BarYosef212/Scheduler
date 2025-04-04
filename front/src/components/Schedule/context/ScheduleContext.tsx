@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Availability } from '../../../types/modelTypes';
 import { getAvailabilities } from '../../../services/services';
-import { useParams } from 'react-router-dom';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 interface ValuesContextType {
   selectedDate: Date;
@@ -40,7 +40,7 @@ const ScheduleProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
-  const { userId } = useParams();
+  const { userId } = useValuesGlobal();
 
   useEffect(() => {
     setSelectedDate(new Date());

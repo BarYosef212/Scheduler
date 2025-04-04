@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import CalendarComp from '../../Schedule/Calendar/CalendarComp';
 import { ActionIcon, Button, NumberInput } from '@mantine/core';
 import styles from './LoadingBookings.module.css';
@@ -9,9 +9,9 @@ import {
 } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
 import ToggleButton from '../../ToggleButton/ToggleButton';
-import { useParams } from 'react-router-dom';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 const LoadingBooking: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -21,7 +21,7 @@ const LoadingBooking: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [isAdd, setIsAdd] = useState<boolean>(true);
   const { setStep } = useValuesAdmin();
-  const { userId } = useParams();
+  const { userId } = useValuesGlobal();
 
   const pickerControl = (r: React.RefObject<HTMLInputElement | null>) => {
     return (
@@ -72,7 +72,7 @@ const LoadingBooking: React.FC = () => {
              startTime,
              endTime,
              selectedDate,
-             userId || '',
+             userId,
            );
 
            console.log(response)
@@ -113,7 +113,7 @@ const LoadingBooking: React.FC = () => {
           startTime,
           endTime,
           selectedDate,
-          userId || '',
+          userId
         );
       }
     }

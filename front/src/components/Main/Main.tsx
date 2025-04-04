@@ -1,12 +1,12 @@
-import { useParams } from 'react-router-dom';
 import { getUser, isAuthenticated, logout } from '../../services/services';
 import { useState, useEffect } from 'react';
 import { Loader } from '@mantine/core';
 import styles from './styles.module.css';
+import { useValuesGlobal } from '../GlobalContext/GlobalContext';
 
 const Main: React.FC = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { userId } = useParams();
+  const {userId} = useValuesGlobal()
   const [title, setTitle] = useState<string>('');
   const [headTitle, setHeadtitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
@@ -15,10 +15,10 @@ const Main: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const authStatus = await isAuthenticated(userId || '');
+        const authStatus = await isAuthenticated(userId);
         setIsAuth(authStatus);
 
-        const user = await getUser(userId || '');
+        const user = await getUser(userId);
         if (user) {
           setTitle(user.title || '');
           setHeadtitle(user.userName || '');

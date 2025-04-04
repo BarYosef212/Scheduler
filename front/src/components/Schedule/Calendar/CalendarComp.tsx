@@ -4,8 +4,7 @@ import '@mantine/dates/styles.css';
 import styles from './CalendarComp.module.css';
 import { useEffect, useState } from 'react';
 import { getUser } from '../../../services/services';
-import { useParams } from 'react-router-dom';
-import { Loader } from '@mantine/core';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 interface CalendarCompProp {
   scheduledDates?: Date[];
@@ -21,7 +20,7 @@ const CalendarComp: React.FC<CalendarCompProp> = ({
   setSelectedDate,
 }) => {
   const [daysExcluded, setDaysExcluded] = useState<number[]>([]);
-  const { userId } = useParams();
+  const { userId } = useValuesGlobal();
 
   useEffect(() => {
     try {

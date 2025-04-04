@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Preferences.module.css';
 import { Checkbox, TextInput, Button, Loader } from '@mantine/core';
-import { useParams } from 'react-router-dom';
 import { getUser, updateUser } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
+import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 
 interface BarberPreferences {
@@ -16,7 +16,7 @@ interface BarberPreferences {
 }
 
 const Preferences: React.FC = () => {
-  const { userId } = useParams();
+  const { userId } = useValuesGlobal();
   const{setStep} = useValuesAdmin()
   const [preferences, setPreferences] = useState<BarberPreferences>({
     daysExcluded: [],
@@ -43,7 +43,7 @@ const Preferences: React.FC = () => {
     const fetchPreferences = async () => {
       try {
         setIsLoading(true);
-        const user = await getUser(userId || '');
+        const user = await getUser(userId);
         if (user) {
           setPreferences({
             daysExcluded: user.daysExcluded,
@@ -96,7 +96,7 @@ const Preferences: React.FC = () => {
     try {
       setIsLoading(true);
       setError('');
-      const response = await updateUser(userId || "", preferences);
+      const response = await updateUser(userId, preferences);
       setSuccess(true);
       Toastify({
         text: response,
