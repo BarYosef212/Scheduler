@@ -3,8 +3,8 @@ import { Booking, Availability, User } from "../types/modelTypes";
 import dayjs from "dayjs";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api/"
-})
+  baseURL: "https://bar-backend-latest.onrender.com/api/"
+});
 
 api.interceptors.request.use((config) => {
   config.withCredentials = true

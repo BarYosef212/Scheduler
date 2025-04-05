@@ -1,6 +1,6 @@
 FROM node:22.12
 
-WORKDIR /src
+WORKDIR /dist
 
 COPY package*.json ./
 
@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npx","ts-node", "server.ts"]
+CMD ["npm", "run", "start"]

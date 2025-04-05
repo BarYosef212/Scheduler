@@ -1,15 +1,16 @@
 FROM node:22.12
 
-WORKDIR /src
+WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
 
 RUN npm run build
 
+RUN npm install -g serve
+
 EXPOSE 5173
 
-CMD ["npm","run", "start"]
+CMD ["serve", "-l", "5173", "dist", "--single"]

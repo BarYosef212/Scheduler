@@ -20,10 +20,9 @@ app.use(express.json());
 
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://scheduler-5p60.onrender.com"],
   credentials: true
-}))
-
+}));
 
 app.use('/api', bookingRoutes)
 app.use('/api', availabilitiesRoutes)
