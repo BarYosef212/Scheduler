@@ -2,11 +2,9 @@
   "name": "hello-prisma",
   "license": "MIT",
   "scripts": {
-    "queries": "ts-node ./src/queries.ts",
-    "caching": "ts-node ./src/caching.ts",
-    "realtime": "ts-node ./src/realtime.ts",
     "start": "ts-node server.ts",
-    "dev": "nodemon --exec ts-node server.ts"
+    "dev": "nodemon --exec ts-node server.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

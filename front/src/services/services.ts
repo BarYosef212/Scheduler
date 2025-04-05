@@ -11,7 +11,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-
 export const filterAvailabilitiesHours = (allTimes: Availability[], dateSelected: Date): string[] => {
   const today = new Date()
   const currentHour = today.getHours()
@@ -39,7 +38,7 @@ export const getAvailabilities = async (userId: string): Promise<Availability[]>
     const res = await api.get<{ availabilities: Availability[] }>(`/getAvailabilities/${userId}`);
     const list = res.data.availabilities || []
     return list
-  } catch (error) {
+  } catch (error:any) {
     console.log(error)
     throw error
   }
@@ -171,7 +170,7 @@ const createListOfTimes = (interval: number, startTime: Date, endTime: Date): st
 }
 
 
-const sortBookings = (bookings: Booking[]) => {
+export const sortBookings = (bookings: Booking[]) => {
   return bookings.sort((a, b) => {
     const getStartTimeInMinutes = (time: string) => {
       const [startTime] = time.split(" - ");

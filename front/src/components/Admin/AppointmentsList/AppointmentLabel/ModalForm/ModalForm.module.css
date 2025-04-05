@@ -104,6 +104,14 @@
   outline: none;
 }
 
+.input:disabled,
+.select:disabled {
+  background-color: #d3d3d3;
+  color: #a9a9a9; 
+  cursor: not-allowed;
+  border-color: #c0c0c0;
+}
+
 .input:focus,
 .select:focus {
   border-color: var(--gold);

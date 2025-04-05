@@ -36,7 +36,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
 
   useEffect(() => {
     const filtered = filterAvailabilitiesHours(allTimes, formData.date);
-    filtered.push(formData.hour);
+    if (!filtered.includes(formData.hour)) filtered.push(formData.hour);
     setTempTimes(filtered);
   }, [formData.date]);
 
@@ -73,28 +73,29 @@ const ModalForm: React.FC<ModalFormProps> = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContent}>
         <Box pos='relative' className={styles.formContainer}>
-          <LoadingOverlay 
-            visible={visible} 
-            loaderProps={{ children: message }} 
+          <LoadingOverlay
+            visible={visible}
+            loaderProps={{ children: message }}
             className={styles.loadingOverlay}
           />
           <div className={styles.modalHeader}>
             <h2 className={styles.updateTitle}>עדכון תור</h2>
-            <button 
-              className={styles.closeButton} 
+            <button
+              className={styles.closeButton}
               onClick={onClose}
-              aria-label="Close"
+              aria-label='Close'
             >
               &#10005;
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label className={styles.label}>
                 <span>שם מלא</span>
                 <input
                   type='text'
+                  disabled
                   name='clientName'
                   value={formData.clientName}
                   onChange={handleChange}
@@ -151,16 +152,18 @@ const ModalForm: React.FC<ModalFormProps> = ({
                 </select>
               </label>
             </div>
-            
-            {error && (
-              <p className={styles.errorMessage}>
-                {error}
-              </p>
-            )}
+
+            {error && <p className={styles.errorMessage}>{error}</p>}
 
             <div className={styles.actions}>
-              <button type='submit' className={styles.saveButton}>שמור</button>
-              <button type='button' onClick={onClose} className={styles.cancelButton}>
+              <button type='submit' className={styles.saveButton}>
+                שמור
+              </button>
+              <button
+                type='button'
+                onClick={onClose}
+                className={styles.cancelButton}
+              >
                 ביטול
               </button>
             </div>
