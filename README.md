@@ -26,6 +26,8 @@ This system is designed for businesses or institutions that require appointment 
 
 ## 🎬 **How to Use**
 
+### **How to Use**
+
 1. **Log into the System**:
     - Sign in with your username and password (if you already have an account).
 
@@ -34,9 +36,14 @@ This system is designed for businesses or institutions that require appointment 
     - Select a date and time from the available slots.
     - Confirm the appointment booking.
 
-3. **Modify Appointment for admins**:
+3. **Modify Appointment for Admins**:
     - Go to the "Admin" page and then "Scheduled Appointments".
     - Choose the appointment you wish to modify and reschedule it.
+
+4. **Manage Admin Settings**:
+    - Load or update availability for services.
+    - Delete existing availabilities if needed.
+    - Modify system settings such as name, logo, and working days.
 
 ---
 ## 🔧 **Tech Stack**
