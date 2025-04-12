@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import * as service from '../services/bookingServices'
 import { Booking } from "../types/modelsTypes";
-import { BOOKING_MESSAGES, AVAILABILITY_MESSAGES, GENERAL_MESSAGES } from "./messages";
-import nodemailer from "nodemailer";
+import { BOOKING_MESSAGES, GENERAL_MESSAGES } from "./messages";
 import { BookingStatus } from "@prisma/client";
 import { getUser } from "../services/userServices";
 
@@ -32,7 +31,7 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
         const text = `שלום <b>${clientName}</b>,<br>נקבע תור חדש ל-${user.userName} בתאריך ${new Date(date).toLocaleDateString('he-IL')} בשעה ${data.hour}.`;
         const logo = user.logo || undefined;
 
-        await sendAppointmentUpdate(clientEmail, subject, text, logo);
+        await service.sendAppointmentUpdate(userId, clientEmail, subject, text, logo);
       }
       return res.json({ Booking });
     } else {
@@ -66,8 +65,8 @@ export const getConfirmedBookings = async (req: Request, res: Response): Promise
 
 export const cancelBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { booking }:{booking:Booking} = req.body
-    const {clientEmail,date,userId,clientName,hour} = booking
+    const { booking }: { booking: Booking } = req.body
+    const { clientEmail, userId, clientName, hour } = booking
     const canceled = await service.cancelBooking(booking)
     if (canceled) {
       if (clientEmail) {
@@ -76,7 +75,7 @@ export const cancelBooking = async (req: Request, res: Response): Promise<Respon
         const text = `שלום <b>${clientName}</b>,<br>בוטל התור ל-${user.userName} בתאריך ${new Date().toLocaleDateString('he-IL')} בשעה ${hour}.`;
         const logo = user.logo || undefined;
 
-        await sendAppointmentUpdate(clientEmail, subject, text, logo);
+        await service.sendAppointmentUpdate(userId, clientEmail, subject, text, logo);
       }
       return res.sendStatus(200)
     }
@@ -89,11 +88,10 @@ export const cancelBooking = async (req: Request, res: Response): Promise<Respon
     })
   }
 }
-
 export const updateBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { newBooking, oldBooking }: { newBooking: Booking, oldBooking: Booking } = req.body
-    const {clientEmail,userId,clientName,date,hour} = newBooking
+    const { clientEmail, userId, clientName, date, hour } = newBooking
 
     const booked = await service.updateBooking(newBooking, oldBooking)
 
@@ -106,8 +104,7 @@ export const updateBooking = async (req: Request, res: Response): Promise<Respon
       const subject = `עדכון תור ל-${user.userName}`;
       const text = `שלום <b>${clientName}</b>,<br>התור שלך ל-${user.userName} עודכן.<br><b>תור קודם:</b> ${new Date(oldBooking.date).toLocaleDateString('he-IL')} בשעה ${oldBooking.hour}.<br><b>תור חדש:</b> ${new Date(date).toLocaleDateString('he-IL')} בשעה ${hour}.`;
       const logo = user.logo || undefined;
-
-      await sendAppointmentUpdate(clientEmail, subject, text, logo);
+      await service.sendAppointmentUpdate(userId, clientEmail, subject, text, logo)
     }
     return res.json({
       message: BOOKING_MESSAGES.SUCCESS_UPDATE
@@ -120,31 +117,3 @@ export const updateBooking = async (req: Request, res: Response): Promise<Respon
   }
 }
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_SENDER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-});
-
-export const sendAppointmentUpdate = async (to: string, subject: string, text: string, logo?: string) => {
-  try {
-    const htmlContent = logo
-      ? `<div style={{direction:"rtl"}}>
-       <p>${text}</p>
-       <img src="${logo}" alt="Logo" style="max-width: 200px; height: auto;" />
-       </div>`
-      : `<p>${text}</p>`;
-
-    const info = await transporter.sendMail({
-      from: `"מערכת ניהול תורים" <${process.env.EMAIL_SENDER}>`,
-      to,
-      subject,
-      html: htmlContent,
-    });
-
-  } catch (error) {
-    console.error("שגיאה בשליחת המייל:", error);
-  }
-};

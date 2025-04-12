@@ -66,11 +66,13 @@ const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
             <div className={styles.detailsSection}>
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>טלפון</span>
+                <br />
                 <span className={styles.detailValue}>{clientPhone}</span>
               </div>
 
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>אימייל</span>
+                <br />
                 <span className={styles.detailValue}>
                   {clientEmail ? clientEmail : 'לא קיים'}
                 </span>
@@ -78,6 +80,7 @@ const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
 
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>נוצר בתאריך</span>
+                <br />
                 <span className={styles.detailValue}>{formattedDate}</span>
               </div>
             </div>
@@ -100,12 +103,19 @@ const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
               ✎
             </button>
           </div>
-         
 
           <Modal
             opened={opened}
             onClose={() => setOpened(false)}
-            styles={{ inner: { position: 'fixed', top: '40%', left: '0' ,height:"fit-content"} ,content:{padding:"24px"}}}
+            styles={{
+              inner: {
+                position: 'fixed',
+                top: '40%',
+                left: '0',
+                height: 'fit-content',
+              },
+              content: { padding: '24px' },
+            }}
             closeOnEscape
             closeOnClickOutside
           >

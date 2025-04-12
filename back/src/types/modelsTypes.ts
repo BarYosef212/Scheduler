@@ -8,6 +8,7 @@ export interface User {
   daysExcluded: number[]
   logo?: string,
   title?: string
+  emailMessagePassword?: string
 }
 
 export interface Booking {

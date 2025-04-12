@@ -49,12 +49,6 @@
   gap: var(--spacing-xs);
 }
 
-.detailRow {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--spacing-sm);
-}
 
 .detailLabel {
   min-width: 80px;

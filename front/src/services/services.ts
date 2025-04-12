@@ -3,13 +3,16 @@ import { Booking, Availability, User } from "../types/modelTypes";
 import dayjs from "dayjs";
 
 const api = axios.create({
-  baseURL: "https://bar-backend-latest.onrender.com/api/"
+  baseURL: import.meta.env.VITE_PRODUCTION === 'true' 
+    ? import.meta.env.VITE_BACKEND_URL 
+    : 'http://localhost:3000/api'
 });
 
 api.interceptors.request.use((config) => {
-  config.withCredentials = true
+  config.withCredentials = true;
   return config;
 });
+
 
 export const filterAvailabilitiesHours = (allTimes: Availability[], dateSelected: Date): string[] => {
   const today = new Date()

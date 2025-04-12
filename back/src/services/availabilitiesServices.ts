@@ -146,7 +146,6 @@ export const checkIfAvailabilitiesOverlapping = async (date: Date, times: string
         if ((newStartInMinutes >= existingStartInMinutes && newStartInMinutes < existingEndInMinutes) ||
           (newEndInMinutes > existingStartInMinutes && newEndInMinutes <= existingEndInMinutes) ||
           (newStartInMinutes <= existingStartInMinutes && newEndInMinutes >= existingEndInMinutes)) {
-          console.log('overlap detected')
           return true
         }
       }

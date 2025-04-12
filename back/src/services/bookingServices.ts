@@ -3,15 +3,19 @@ import { Booking } from '../types/modelsTypes'
 import { addTimeToAvailability, deleteTimeFromAvailability, getAvailabilityByDate } from "./availabilitiesServices";
 import { BookingStatus } from "@prisma/client";
 import dayjs from "dayjs";
+import { getUser } from "./userServices";
+import nodemailer from "nodemailer";
+import sgMail from '@sendgrid/mail'
 
 const prisma = new PrismaClient()
 
+
 export const scheduleBooking = async (data: Booking): Promise<Booking | null> => {
   try {
-    const { date, hour,userId,clientPhone } = data
+    const { date, hour, userId, clientPhone } = data
 
     const existOnSameDay = await prisma.booking.findFirst({
-      where: { clientPhone: clientPhone, date: date,status: BookingStatus.CONFIRMED }
+      where: { userId, clientPhone: clientPhone, date: date, status: BookingStatus.CONFIRMED }
     })
     if (existOnSameDay) {
       return null
@@ -42,9 +46,9 @@ export const scheduleBooking = async (data: Booking): Promise<Booking | null> =>
 
 export const cancelBooking = async (booking: Booking): Promise<boolean> => {
   try {
-    const { id, date, hour,userId } = booking
+    const { id, date, hour, userId } = booking
     const newDate = new Date(date)
-    const added = await addTimeToAvailability(newDate, hour,userId)
+    const added = await addTimeToAvailability(newDate, hour, userId)
     if (!added) return false
 
 
@@ -56,7 +60,7 @@ export const cancelBooking = async (booking: Booking): Promise<boolean> => {
     })
 
     if (!updatedBooking) {
-      await deleteTimeFromAvailability(date, hour,userId);
+      await deleteTimeFromAvailability(date, hour, userId);
       return false;
     }
     return true
@@ -136,3 +140,54 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
     throw error
   }
 }
+
+
+const getTransporter = (email: string, password: string) => {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: email,
+      pass: password,
+    },
+  });
+};
+sgMail.setApiKey(process.env.NODEMAILER_API_KEY || "");
+
+export const sendAppointmentUpdate = async (id: string, to: string, subject: string, text: string, logo?: string) => {
+  try {
+    const user = await getUser(id)
+    if (!user.emailMessagePassword) return
+    const { email, emailMessagePassword } = user
+    const htmlContent = logo
+      ? `<div style="direction: rtl; text-align: right;">
+         <p>${text}</p>
+         <img src="${logo}" alt="Logo" style="max-width: 200px; height: auto;" />
+       </div>`
+      : `<div style="direction: rtl; text-align: right;">
+         <p>${text}</p>
+       </div>`;
+
+    const transporter = getTransporter(email, emailMessagePassword);
+    const sendMailPromise = transporter.sendMail({
+      from: `"מערכת ניהול תורים" <${email}>`,
+      to,
+      subject,
+      html: htmlContent,
+    });
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Email sending timed out after 10 seconds")), 10000)
+    );
+
+    try {
+      await Promise.race([sendMailPromise, timeoutPromise]);
+    } catch (error) {
+      console.error("Error while sending email:", error);
+      throw new Error("Failed to send email. Please check the email configuration or network connectivity.");
+    }
+
+    await Promise.race([sendMailPromise, timeoutPromise]);
+  } catch (error) {
+    console.error("שגיאה בשליחת המייל:", error);
+  }
+};

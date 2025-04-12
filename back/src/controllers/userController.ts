@@ -11,13 +11,12 @@ export const userLogin = async (req: Request, res: Response): Promise<Response> 
 
     const token = await service.userLogin(email, password)
     if (!token) return res.status(400).json({ message: USER_MESSAGE.INVALID_DETAILS })
-
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 3600000,
-    })
+    });
 
     return res.json({ message: USER_MESSAGE.LOGIN })
   } catch (error) {
@@ -30,8 +29,8 @@ export const userLogout = async (req: Request, res: Response): Promise<Response>
   try {
     res.clearCookie('token', {
       httpOnly: true,
-      secure: false,
-      sameSite: 'strict'
+      secure: true,
+      sameSite: 'none'
     })
     return res.json({ message: USER_MESSAGE.LOGOUT })
   } catch (error) {

@@ -8,6 +8,7 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import path from 'path';
 
 dotenv.config()
 
@@ -20,14 +21,16 @@ app.use(express.json());
 
 
 app.use(cors({
-  origin: ["http://localhost:5173", "https://scheduler-5p60.onrender.com"],
-  credentials: true
-}));
+  origin: ["http://142.93.162.193:5173", "http://localhost:5173"],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 app.use('/api', bookingRoutes)
 app.use('/api', availabilitiesRoutes)
 app.use('/api', userRoutes)
 
+app.use(express.static(path.join(__dirname, '..', 'front', 'dist')));
 
 const swaggerOptions = {
   swaggerDefinition: {

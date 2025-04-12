@@ -12,9 +12,10 @@
     "@mantine/core": "^7.17.1",
     "@mantine/dates": "^7.17.1",
     "@mantine/hooks": "^7.17.1",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^6.6.0",
     "@prisma/extension-accelerate": "1.2.2",
     "@prisma/extension-pulse": "1.2.2",
+    "@sendgrid/mail": "^8.1.5",
     "@types/body-parser": "^1.19.5",
     "@types/node": "22.13.5",
     "@types/swagger-jsdoc": "^6.0.4",
@@ -40,7 +41,7 @@
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/nodemailer": "^6.4.17",
-    "prisma": "^6.5.0",
+    "prisma": "^6.6.0",
     "ts-node": "10.9.2",
     "typescript": "5.7.3"
   }
