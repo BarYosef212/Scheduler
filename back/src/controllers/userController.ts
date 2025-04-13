@@ -29,13 +29,28 @@ export const userLogout = async (req: Request, res: Response): Promise<Response>
   try {
     res.clearCookie('token', {
       httpOnly: true,
-      secure: true,
-      sameSite: 'none'
+      secure: false,
+      sameSite: 'lax',
     })
     return res.json({ message: USER_MESSAGE.LOGOUT })
   } catch (error) {
     console.log(error)
     return res.status(500).json({ message: GENERAL_MESSAGES.UNKNOWN_ERROR })
+  }
+}
+
+export const userRegister = async(req:Request,res:Response):Promise<Response>=>{
+  try {
+    const {email,userName,password} = req.body
+    if(!email || !userName || !password){
+      return res.status(400).json({message:GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED})
+    }
+
+    await service.register(userName,email,password)
+    return res.json({message:USER_MESSAGE.REGISTER})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message:GENERAL_MESSAGES.UNKNOWN_ERROR})
   }
 }
 

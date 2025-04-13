@@ -4,7 +4,7 @@ import { Booking } from "../types/modelsTypes";
 import { BOOKING_MESSAGES, GENERAL_MESSAGES } from "./messages";
 import { BookingStatus } from "@prisma/client";
 import { getUser } from "../services/userServices";
-
+import * as mailer from '../services/mailer'
 
 export const scheduleBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -31,7 +31,7 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
         const text = `שלום <b>${clientName}</b>,<br>נקבע תור חדש ל-${user.userName} בתאריך ${new Date(date).toLocaleDateString('he-IL')} בשעה ${data.hour}.`;
         const logo = user.logo || undefined;
 
-        await service.sendAppointmentUpdate(userId, clientEmail, subject, text, logo);
+        await mailer.sendAppointmentUpdate(user.email,clientEmail, subject, text, logo);
       }
       return res.json({ Booking });
     } else {
@@ -75,7 +75,7 @@ export const cancelBooking = async (req: Request, res: Response): Promise<Respon
         const text = `שלום <b>${clientName}</b>,<br>בוטל התור ל-${user.userName} בתאריך ${new Date().toLocaleDateString('he-IL')} בשעה ${hour}.`;
         const logo = user.logo || undefined;
 
-        await service.sendAppointmentUpdate(userId, clientEmail, subject, text, logo);
+        await mailer.sendAppointmentUpdate(user.email,clientEmail, subject, text, logo);
       }
       return res.sendStatus(200)
     }
@@ -104,7 +104,7 @@ export const updateBooking = async (req: Request, res: Response): Promise<Respon
       const subject = `עדכון תור ל-${user.userName}`;
       const text = `שלום <b>${clientName}</b>,<br>התור שלך ל-${user.userName} עודכן.<br><b>תור קודם:</b> ${new Date(oldBooking.date).toLocaleDateString('he-IL')} בשעה ${oldBooking.hour}.<br><b>תור חדש:</b> ${new Date(date).toLocaleDateString('he-IL')} בשעה ${hour}.`;
       const logo = user.logo || undefined;
-      await service.sendAppointmentUpdate(userId, clientEmail, subject, text, logo)
+      await mailer.sendAppointmentUpdate(user.email,clientEmail, subject, text, logo)
     }
     return res.json({
       message: BOOKING_MESSAGES.SUCCESS_UPDATE

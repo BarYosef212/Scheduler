@@ -81,6 +81,10 @@ router.post('/logout', (req: Request, res: Response) => {
   controllers.userLogout(req, res)
 })
 
+
+router.post('/userRegister',(req:Request,res:Response)=>{
+  controllers.userRegister(req,res)
+})
 /**
  * @swagger
  * /api/auth/protected/{userId}:

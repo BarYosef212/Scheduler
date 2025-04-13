@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from '../types/modelsTypes'
 import jwt from 'jsonwebtoken'
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient()
 
@@ -10,9 +11,10 @@ export const userLogin = async (email: string, password: string): Promise<string
     if (!user) return null
 
 
-    if (user.password === password) {
-      const token = jwt.sign({ userId: user.id, userEmail: user.email }, process.env.JWT_SECRET as string, { expiresIn: '1h' })
-      return token
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      const token = jwt.sign({ userId: user.id, userEmail: user.email }, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+      return token;
     }
 
     return null
@@ -41,6 +43,23 @@ export const updateUser = async(userId:string,data:Partial<User>):Promise<boolea
     const updated = await prisma.user.update({where:{id:userId},data})
     if (updated) return true
     return false
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
+
+export const register = async(userName:string,email:string,password:string):Promise<boolean>=>{
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: {
+      userName,
+      email,
+      password: hashedPassword,
+      },
+    });
+    return true
   } catch (error) {
     console.log(error)
     throw error

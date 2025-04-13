@@ -25,6 +25,7 @@ export const USER_MESSAGE = {
   LOGOUT: "התנתקת בהצלחה",
   INVALID_DETAILS: "השם משתמש או הסיסמה שהזנת שגויים, אנא נסה שוב",
   UPDATE_FAILED:"העדכון נכשל אנא נסה שוב",
+  REGISTER:'המשתמש נרשם בהצלחה'
 }
 
 export const JWT_MESSAGES = {
