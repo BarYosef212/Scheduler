@@ -36,7 +36,6 @@ const ModalForm: React.FC<ModalFormProps> = ({
 
   useEffect(() => {
     const filtered = filterAvailabilitiesHours(allTimes, formData.date);
-    if (!filtered.includes(formData.hour)) filtered.push(formData.hour);
     setTempTimes(filtered);
   }, [formData.date]);
 
