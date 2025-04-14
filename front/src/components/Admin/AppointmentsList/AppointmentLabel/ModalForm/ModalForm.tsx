@@ -8,6 +8,7 @@ import {
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { useDisclosure } from '@mantine/hooks';
 import { Box, LoadingOverlay } from '@mantine/core';
+import dayjs from 'dayjs';
 
 interface ModalFormProps {
   isOpen: boolean;
@@ -36,8 +37,14 @@ const ModalForm: React.FC<ModalFormProps> = ({
 
   useEffect(() => {
     const filtered = filterAvailabilitiesHours(allTimes, formData.date);
-    if (!filtered.includes(formData.hour)) filtered.push(formData.hour);
+    if (
+      dayjs(formData.date).isSame(currentBooking.date, 'day') &&
+      !filtered.includes(formData.hour)
+    )
+      filtered.push(formData.hour);
     setTempTimes(filtered);
+    if (!dayjs(formData.date).isSame(currentBooking.date, 'day'))
+      setFormData({ ...formData, hour: filtered[0] });
   }, [formData.date]);
 
   const handleSubmit = async (e: React.FormEvent) => {

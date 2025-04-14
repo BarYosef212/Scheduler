@@ -6,6 +6,7 @@ import ModalForm from './ModalForm/ModalForm';
 import { useState } from 'react';
 import { Loader } from '@mantine/core';
 import { useValuesAdmin } from '../../context/AdminContext';
+import { useToast } from '../../../hooks/useToast';
 
 interface AppointmentLabelProps {
   booking: Booking;
@@ -21,8 +22,9 @@ const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
   const { hour, clientPhone, clientEmail, clientName, createdAt } = booking;
   const [opened, setOpened] = useState(false);
   const { isLoading, setIsLoading } = useValuesAdmin();
+  const {showToast} = useToast()
 
-  const createdDate = new Date(createdAt);
+  const createdDate = createdAt ? new Date(createdAt) : new Date();
 
   const formattedDate = new Intl.DateTimeFormat('he-IL', {
     weekday: 'long',
@@ -42,8 +44,11 @@ const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
       if (res) {
         setAllBookings((prev) => prev.filter((b) => b.id !== booking.id));
       }
+      showToast('הפעולה בוצעה בהצלחה','success')
     } catch (error) {
       console.log(error);
+      showToast('התרחשה שגיאה, אנא נסה בשנית', 'error');
+
     } finally {
       setIsLoading(false);
     }

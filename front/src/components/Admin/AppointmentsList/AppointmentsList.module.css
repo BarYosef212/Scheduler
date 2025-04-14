@@ -37,6 +37,32 @@
   margin-top: var(--spacing-xs);
 }
 
+.googleCalendarButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #222222;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--box-shadow-sm);
+}
+
+.googleCalendarButton:hover {
+  background-color: #000000;
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.googleCalendarButton:active {
+  transform: translateY(0);
+  background-color: #111111;
+}
 .backButton {
   background-color: var(--primary-color);
   color: white;
@@ -102,6 +128,7 @@
   background: var(--gradient-primary);
   border-radius: 2px;
 }
+
 
 .bookingsList {
   display: flex;

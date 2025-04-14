@@ -29,7 +29,7 @@ router.post('/scheduleBooking/:userId',(req:Request,res:Response)=>{
 
 /**
  * @swagger
- * /api/getConfirmedBookings/{userId}:
+ * /api/getBookingsById/{userId}:
  *   get:
  *     tags:
  *       - Booking
@@ -48,7 +48,7 @@ router.post('/scheduleBooking/:userId',(req:Request,res:Response)=>{
  *         description: List of confirmed bookings
  */
 router.get('/getConfirmedBookings/:userId', (req: Request, res: Response) => {
-  controllers.getConfirmedBookings(req, res)
+  controllers.getBookingsById(req, res)
 })
 
 /**

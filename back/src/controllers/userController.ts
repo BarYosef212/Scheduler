@@ -69,8 +69,10 @@ export const getUser = async (req: Request, res: Response): Promise<Response> =>
         message: USER_MESSAGE.NOT_FOUND
       })
     }
+    const {password, ...rest} = user
+
     return res.json({
-      user
+      user:rest
     })
 
   } catch (error) {

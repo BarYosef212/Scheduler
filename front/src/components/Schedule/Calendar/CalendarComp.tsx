@@ -3,7 +3,6 @@ import { Calendar } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import styles from './CalendarComp.module.css';
 import { useEffect, useState } from 'react';
-import { getUser } from '../../../services/services';
 import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 
 interface CalendarCompProp {
@@ -20,18 +19,15 @@ const CalendarComp: React.FC<CalendarCompProp> = ({
   setSelectedDate,
 }) => {
   const [daysExcluded, setDaysExcluded] = useState<number[]>([]);
-  const { userId } = useValuesGlobal();
+  const { user } = useValuesGlobal();
 
   useEffect(() => {
     try {
-      if (userId)
-        getUser(userId).then((user) =>
-          setDaysExcluded(user?.daysExcluded || []),
-        );
+      if (user) setDaysExcluded(user?.daysExcluded || []);
     } catch (error) {
       console.log(error);
-    } 
-  }, []);
+    }
+  }, [user]);
 
   const excludeDates = (date: Date) => {
     return daysExcluded?.includes(date.getDay()) || false;
@@ -47,6 +43,7 @@ const CalendarComp: React.FC<CalendarCompProp> = ({
     <>
       <div className={styles.calendarWrapper}>
         <Calendar
+          styles={{levelsGroup:{justifyContent:"center"}}}
           className={styles.calendar}
           getDayProps={(dateSelected) => {
             const formattedDate = dayjs(dateSelected).format('YYYY-MM-DD');

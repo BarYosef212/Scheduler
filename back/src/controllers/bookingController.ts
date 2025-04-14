@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import * as service from '../services/bookingServices'
 import { Booking } from "../types/modelsTypes";
 import { BOOKING_MESSAGES, GENERAL_MESSAGES } from "./messages";
-import { BookingStatus } from "@prisma/client";
 import { getUser } from "../services/userServices";
 import * as mailer from '../services/mailer'
 
@@ -19,7 +18,8 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
       hour: hour,
       clientName: clientName,
       clientEmail: clientEmail,
-      clientPhone: clientPhone
+      clientPhone: clientPhone,
+      googleEventId:'0'
     }
 
     const Booking = await service.scheduleBooking(data)
@@ -45,14 +45,13 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
   }
 }
 
-export const getConfirmedBookings = async (req: Request, res: Response): Promise<Response> => {
+export const getBookingsById = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { userId } = req.params
     const bookings = await service.getAllBookingsById(userId)
 
     if (bookings) {
-      const filtered = bookings.filter((booking) => booking.status == BookingStatus.CONFIRMED)
-      return res.json({ bookings: filtered })
+      return res.json({ bookings: bookings })
     }
     return res.status(400).json({ message: GENERAL_MESSAGES.API_ERROR })
   } catch (error) {

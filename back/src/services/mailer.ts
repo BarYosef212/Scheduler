@@ -14,7 +14,6 @@ export const sendAppointmentUpdate = async (sender: string, to: string, subject:
       : `<div style="direction: rtl; text-align: right;">
            <p>${text}</p>
          </div>`;
-
     const msg = {
       to: to,
       from: sender,

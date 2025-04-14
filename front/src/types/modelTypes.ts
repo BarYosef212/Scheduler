@@ -1,15 +1,25 @@
+export interface User {
+  id: string,
+  email: string,
+  userName: string,
+  password: string,
+  daysExcluded: number[]
+  logo?: string,
+  title?: string,
+  googleTokens?: any
+}
+
 export interface Booking {
   id?: string,
-  status?: 'CONFIRMED' | 'CANCELLED',
   date: Date,
   hour: string,
   userId: string,
   clientName: string,
-  clientEmail: string | null,
+  clientEmail: string,
   clientPhone: string,
-  createdAt:Date
+  createdAt?: Date
+  googleEventId: string
 }
-
 
 export interface Availability {
   id: string
@@ -17,15 +27,4 @@ export interface Availability {
   date: Date
   times: string[]
   createdAt: Date
-  updatedAt: Date
-}
-
-export interface User {
-  id: string,
-  email: string,
-  userName: string,
-  password: string,
-  daysExcluded: number[]
-  logo: string | null,
-  title: string
 }

@@ -9,9 +9,9 @@ import {
 } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
 import ToggleButton from '../../ToggleButton/ToggleButton';
-import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
+import { useToast } from '../../hooks/useToast';
 
 const LoadingBooking: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -20,6 +20,7 @@ const LoadingBooking: React.FC = () => {
   const refEnd = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string>('');
   const [isAdd, setIsAdd] = useState<boolean>(true);
+  const { showToast } = useToast();
   const { setStep } = useValuesAdmin();
   const { userId } = useValuesGlobal();
 
@@ -66,36 +67,20 @@ const LoadingBooking: React.FC = () => {
         setError('אינטרוול זמן לא תקין, מקבל ערכים בין 1 - 1200');
       } else {
         try {
-           setError('');
-           const response = await createAvailabilities(
-             interval,
-             startTime,
-             endTime,
-             selectedDate,
-             userId,
-           );
+          setError('');
+          const response = await createAvailabilities(
+            interval,
+            startTime,
+            endTime,
+            selectedDate,
+            userId,
+          );
 
-           console.log(response)
-           Toastify({
-             text: response,
-             duration: 3000,
-            style: {
-              background: 'linear-gradient(to right, #00b09b, #96c93d)',
-            },
-            
-           }).showToast();
-           
-        } catch (error:any) {
-          console.log(error)
-             Toastify({
-             text: error || 'An error occurred',
-             className: 'error',
-             style: {
-               background: 'linear-gradient(to right, #ff0000, #ff5f6d)',
-             },
-             }).showToast();
+          showToast(response, 'success');
+        } catch (error: any) {
+          console.log(error);
+          showToast(error || 'An error occurred', 'error');
         }
-       
       }
     } else {
       if (!refStart.current?.value || !refEnd.current?.value) {
@@ -109,12 +94,7 @@ const LoadingBooking: React.FC = () => {
         return;
       } else {
         setError('');
-        await deleteAvailabilities(
-          startTime,
-          endTime,
-          selectedDate,
-          userId
-        );
+        await deleteAvailabilities(startTime, endTime, selectedDate, userId);
       }
     }
   };
