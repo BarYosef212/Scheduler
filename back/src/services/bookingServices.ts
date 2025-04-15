@@ -46,7 +46,7 @@ export const scheduleBooking = async (data: Booking): Promise<Booking | null> =>
     return booking;
 
   } catch (error) {
-    // console.error("Failed to schedule booking:", error);
+    console.error("Failed to schedule booking:", error);
     throw error;
   }
 };

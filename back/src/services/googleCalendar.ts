@@ -82,12 +82,13 @@ export const setCredentials = (tokens: any) => {
 
 export const createEvent = async (userId: string, calendarId: string, data: Booking) => {
   try {
-    const user = await getUser(userId);
-    const { googleTokens } = user;
+    let user = await getUser(userId);
+    let { googleTokens } = user;
 
     const expiryDate = googleTokens.expiry_date;
     if (expiryDate && expiryDate <= Date.now()) {
-      await refreshAccessToken(user);
+      googleTokens = await refreshAccessToken(user);
+      user = { ...user, googleTokens };
     }
     setCredentials({ access_token: googleTokens.access_token });
 
@@ -127,15 +128,20 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
   }
 };
 
+
+
 export const deleteEvent = async (userId: string, calendarId: string, eventId: string) => {
   try {
-    const user = await getUser(userId);
-    const { googleTokens } = user;
+   
+    let user = await getUser(userId);
+    let { googleTokens } = user;
 
     const expiryDate = googleTokens.expiry_date;
     if (expiryDate && expiryDate <= Date.now()) {
-      await refreshAccessToken(user);
+      googleTokens = await refreshAccessToken(user);
+      user = { ...user, googleTokens };
     }
+
     setCredentials({ access_token: googleTokens.access_token });
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
