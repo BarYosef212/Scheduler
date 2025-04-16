@@ -15,9 +15,8 @@ const AppointmentsList = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [scheduledDates, setScheduledDates] = useState<Date[]>([]);
-  const [isConnectedToGoogle, setIsConnectedToGoogle] =
-    useState<boolean>(true);
-  const { setStep, allTimes, isLoading, setIsLoading } = useValuesAdmin();
+  const [isConnectedToGoogle, setIsConnectedToGoogle] = useState<boolean>(true);
+  const { setStep, isLoading, setIsLoading } = useValuesAdmin();
   const { userId } = useValuesGlobal();
 
   useEffect(() => {
@@ -26,18 +25,17 @@ const AppointmentsList = () => {
         setIsLoading(true);
         const confirmedBookings = await services.getBookingsById(userId);
         setAllBookings(confirmedBookings);
-        await services.getUser(userId).then(user=>{
-          if(user && !user.googleTokens) setIsConnectedToGoogle(false);
-        })
+        await services.getUser(userId).then((user) => {
+          if (user && !user.googleTokens) setIsConnectedToGoogle(false);
+        });
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
     fetchData();
   }, []);
-
 
   useEffect(() => {
     setBookings(services.filterBookingsByDate(allBookings, selectedDate));
