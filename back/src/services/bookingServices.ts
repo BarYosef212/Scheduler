@@ -1,130 +1,117 @@
 import { PrismaClient } from "@prisma/client";
 import { Booking } from '../types/modelsTypes'
-import { addTimeToAvailability, deleteTimeFromAvailability, getAvailabilityByDate } from "./availabilitiesServices";
-import { BookingStatus } from "@prisma/client";
+import * as AvailabilitiesServices from "./availabilitiesServices";
 import dayjs from "dayjs";
-
+import * as GoogleService from './googleCalendar';
+import { getUser } from "./userServices";
+import logger from "../config/logger";
 const prisma = new PrismaClient()
 
 
-export const scheduleBooking = async (data: Booking): Promise<Booking | null> => {
+export const scheduleBooking = async (data: Booking): Promise<Booking> => {
   try {
-    const { date, hour, userId, clientPhone } = data
+    const { date, hour, userId, clientPhone, clientEmail } = data;
 
-    const existOnSameDay = await prisma.booking.findFirst({
-      where: { userId, clientPhone: clientPhone, date: date, status: BookingStatus.CONFIRMED }
-    })
-    if (existOnSameDay) {
-      return null
+    if (!date || !hour || !userId || !clientPhone || !clientEmail) {
+      throw new Error("Missing required booking fields");
+    }
+    if (!dayjs(date).isValid()) {
+      throw new Error("Invalid date format");
+    }
+    const bookingDate = new Date(date);
+
+    const existingBooking = await prisma.booking.findFirst({
+      where: {
+        userId,
+        OR: [
+          { clientPhone },
+          { clientEmail },
+        ],
+        date: bookingDate,
+      },
+    });
+    if (existingBooking) {
+      throw new Error("Booking already exists");
     }
 
-    const availability = await getAvailabilityByDate(date, userId)
-    if (!availability || !availability.times.includes(hour)) return null
-
-
-    const booking = await prisma.booking.create({
-      data
-    })
-
-    if (!booking) return null
-    const deleted = await deleteTimeFromAvailability(date, hour, userId)
-    if (!deleted) {
-      await prisma.booking.delete({ where: { id: booking.id } });
-      return null;
+    const availability = await AvailabilitiesServices.getAvailabilityByDate(date, userId);
+    if (!availability || !availability.times.includes(hour)) {
+      throw new Error("Requested time slot unavailable");
     }
 
-    return booking
+    const user = await getUser(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
 
-  } catch (error) {
-    console.error("error in scheduleBooking service")
-    throw error
-  }
-}
+    return await prisma.$transaction(async (tx) => {
+      let googleEventId: string | undefined;
 
-export const cancelBooking = async (booking: Booking): Promise<boolean> => {
-  try {
-    const { id, date, hour, userId } = booking
-    const newDate = new Date(date)
-    const added = await addTimeToAvailability(newDate, hour, userId)
-    if (!added) return false
-
-
-    const updatedBooking = await prisma.booking.update({
-      where: { id: id },
-      data: {
-        status: BookingStatus.CANCELLED
+      if (user.googleTokens) {
+        const event = await GoogleService.createEvent(userId, "primary", data);
+        if (!event?.id) {
+          throw new Error("Failed to create Google Calendar event");
+        }
+        googleEventId = event.id;
       }
-    })
 
-    if (!updatedBooking) {
-      await deleteTimeFromAvailability(date, hour, userId);
-      return false;
-    }
-    return true
+      const booking = await tx.booking.create({
+        data: { ...data, date: bookingDate, googleEventId },
+      });
 
-  } catch (error) {
-    console.error("error in cancelBooking")
-    throw error
+      const updated = await AvailabilitiesServices.deleteTimeFromAvailability(date, hour, userId, tx);
+      if (!updated) {
+        throw new Error("Failed to update availability");
+      }
+
+      return booking;
+    });
+  } catch (error: any) {
+    throw new Error(`Failed to schedule booking: ${error.message}`);
   }
-}
+};
 
-
-export const getAllBookingsById = async (id: string): Promise<Booking[] | null> => {
+export const cancelBooking = async (booking: Booking): Promise<void> => {
   try {
-    const bookings = await prisma.booking.findMany({ where: { userId: id } })
-    if (!bookings) {
-      return null
+    const { id, date, hour, userId, googleEventId } = booking;
+
+    if (!id || !userId) {
+      throw new Error("Booking ID and user ID are required");
     }
-    return bookings
-  } catch (error) {
-    console.error("error with getBookings controller")
-    throw error
+    const bookingDate = new Date(date);
+
+    return await prisma.$transaction(async (tx) => {
+      await AvailabilitiesServices.addTimeToAvailability(bookingDate, hour, userId, tx);
+      await tx.booking.delete({ where: { id } });
+      const user = await getUser(userId);
+      if (user?.googleTokens && googleEventId) {
+        await GoogleService.deleteEvent(userId, "primary", googleEventId);
+      }
+    });
+  } catch (error: any) {
+    throw new Error(`Failed to cancel booking: ${error.message}`);
   }
-}
+};
+
+export const getAllBookingsById = async (id: string): Promise<Booking[]> => {
+  try {
+    const bookings = await prisma.booking.findMany({ where: { userId: id } });
+    return bookings
+
+  } catch (error) {
+    logger.error(`Error fetching bookings for user ${id}:`, error);
+    throw error;
+  }
+};
 
 export const updateBooking = async (newBooking: Booking, oldBooking: Booking): Promise<boolean> => {
   try {
-
     newBooking.date = new Date(newBooking.date)
     oldBooking.date = new Date(oldBooking.date)
     if (!(dayjs(newBooking.date).isSame(oldBooking.date)) || newBooking.hour != oldBooking.hour) {
-      newBooking.updatedFromId = oldBooking.id
-
-      const updatedOldBooking = await prisma.booking.update({
-        where: { id: oldBooking.id },
-        data: {
-          status: BookingStatus.UPDATED,
-        }
-      })
-      if (!updatedOldBooking) {
-        return false
-      }
-
-
-
-      newBooking.createdAt = undefined
-      const booked = await scheduleBooking(newBooking)
-      if (!booked) {
-        await prisma.booking.update({
-          where: { id: oldBooking.id },
-          data: {
-            status: BookingStatus.CONFIRMED,
-          }
-        })
-        return false
-      }
-
-
-      const canceled = await cancelBooking(oldBooking)
-      if (!canceled) {
-        await prisma.booking.update({
-          where: { id: oldBooking.id },
-          data: {
-            status: BookingStatus.CONFIRMED,
-          }
-        })
-        await prisma.booking.delete({ where: { id: booked.id } })
-        return false
+      const scheduled = await scheduleBooking(newBooking)
+      if (scheduled) {
+        await cancelBooking(oldBooking)
       }
     }
     else {
@@ -133,10 +120,11 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
 
     return true
   } catch (error) {
-    console.error("error with updateBooking controller")
+    logger.error("error with updateBooking controller")
     throw error
   }
 }
+
 
 
 

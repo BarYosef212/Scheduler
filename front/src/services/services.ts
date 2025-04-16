@@ -14,6 +14,16 @@ api.interceptors.request.use((config) => {
 });
 
 
+export const authGoogle = async(userId:string)=>{
+  try {
+    const url = new URL('http://localhost:3000/api/auth/google');
+    url.searchParams.append('userId', userId);
+    window.location.href = url.toString()
+  } catch (error) {
+    console.error('Error in :',error)
+  }
+}
+
 export const filterAvailabilitiesHours = (allTimes: Availability[], dateSelected: Date): string[] => {
   const today = new Date()
   const currentHour = today.getHours()
@@ -66,7 +76,7 @@ export const scheduleBooking = async (data: Booking, userId: string): Promise<nu
   }
 }
 
-export const getConfirmedBookingsById = async (userId: string): Promise<Booking[]> => {
+export const getBookingsById = async (userId: string): Promise<Booking[]> => {
   try {
     const response = await api.get<{ bookings: Booking[] }>(`/getConfirmedBookings/${userId}`);
     return response.data.bookings;

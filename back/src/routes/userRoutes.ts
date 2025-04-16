@@ -1,9 +1,19 @@
-import express, { NextFunction, Request, Response } from 'express'
+import express, { Request, Response } from 'express'
 import * as controllers from '../controllers/userController'
 import {isAuthenticated } from '../middleware/auth'
 import { checkToken } from '../middleware/auth'
-
+import * as googleServices from '../services/googleCalendar';
 const router = express.Router()
+
+router.get('/auth/google', (req, res) => {
+  googleServices.redirectToGoogleAuth(req, res);
+});
+
+router.get('/auth/google/callback', async (req, res) => {
+  googleServices.handleGoogleAuthCallback(req,res)
+});
+
+
 /**
  * @swagger
  * /api/getUser:

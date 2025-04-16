@@ -6,6 +6,6 @@ import App from './App.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <MantineProvider>
-    <App />
-  </MantineProvider>
+      <App />
+  </MantineProvider>,
 );

@@ -1,5 +1,3 @@
-import { BookingStatus } from '@prisma/client'
-
 export interface User {
   id: string,
   email: string,
@@ -7,13 +5,12 @@ export interface User {
   password: string,
   daysExcluded: number[]
   logo?: string,
-  title?: string
-  emailMessagePassword?: string
+  title?: string,
+  googleTokens?: any
 }
 
 export interface Booking {
   id?: string,
-  status?: BookingStatus,
   date: Date,
   hour: string,
   userId: string,
@@ -21,7 +18,7 @@ export interface Booking {
   clientEmail: string,
   clientPhone: string,
   createdAt?: Date
-  updatedFromId?: string | null
+  googleEventId: string
 }
 
 export interface Availability {

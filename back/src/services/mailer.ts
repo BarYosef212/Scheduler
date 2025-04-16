@@ -1,5 +1,6 @@
 
 import sgMail from '@sendgrid/mail'
+import logger from '../config/logger';
 
 if (!process.env.SENDGRID_API_KEY) throw new Error("No Api key")
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -14,7 +15,6 @@ export const sendAppointmentUpdate = async (sender: string, to: string, subject:
       : `<div style="direction: rtl; text-align: right;">
            <p>${text}</p>
          </div>`;
-
     const msg = {
       to: to,
       from: sender,
@@ -24,7 +24,7 @@ export const sendAppointmentUpdate = async (sender: string, to: string, subject:
 
     await sgMail.send(msg);
   } catch (error: any) {
-    console.error("Error in sendAppointmentUpdate:", error.response.body);
+    logger.error("Error in sendAppointmentUpdate:", error.response.body);
   }
 };
 

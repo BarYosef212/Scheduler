@@ -3,10 +3,8 @@ import styles from './Preferences.module.css';
 import { Checkbox, TextInput, Button, Loader } from '@mantine/core';
 import { getUser, updateUser } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
-import Toastify from 'toastify-js';
-import 'toastify-js/src/toastify.css';
 import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
-
+import { useToast } from '../../hooks/useToast';
 
 interface BarberPreferences {
   daysExcluded: number[];
@@ -17,7 +15,8 @@ interface BarberPreferences {
 
 const Preferences: React.FC = () => {
   const { userId } = useValuesGlobal();
-  const{setStep} = useValuesAdmin()
+  const { setStep } = useValuesAdmin();
+  const { showToast } = useToast();
   const [preferences, setPreferences] = useState<BarberPreferences>({
     daysExcluded: [],
     userName: '',
@@ -48,8 +47,8 @@ const Preferences: React.FC = () => {
           setPreferences({
             daysExcluded: user.daysExcluded,
             userName: user.userName,
-            title: user.title,
-            logo: user.logo,
+            title: user.title || '',
+            logo: user.logo || '',
           });
         }
       } catch (err) {
@@ -89,32 +88,22 @@ const Preferences: React.FC = () => {
     }));
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setIsLoading(true);
       setError('');
-      const response = await updateUser(userId, preferences);
+      const response = await updateUser(userId, {
+        ...preferences,
+        logo: preferences.logo || undefined,
+      });
       setSuccess(true);
-      Toastify({
-        text: response,
-        duration: 3000,
-        gravity: "top",
-        position: "center",
-        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-      }).showToast();
-    } catch (error:any) {
+      showToast(response, 'success');
+    } catch (error: any) {
       console.error('Error updating preferences:', error);
       setError('אירעה שגיאה בשמירת ההעדפות');
-      Toastify({
-        text: error,
-        duration: 3000,
-        gravity: "top",
-        position: "center",
-        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-      }).showToast();
+      showToast(error, 'error');
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Availability } from '../types/modelsTypes'
+import dayjs from "dayjs";
+import logger from "../config/logger";
 const prisma = new PrismaClient()
 
 
@@ -8,32 +10,50 @@ export const getAvailabilities = async (userId: string): Promise<Availability[]>
     const availabilities = await prisma.availability.findMany({ where: { userId: userId } })
     return availabilities
   } catch (error) {
-    console.error("error in getAvailabilitiesService: ", error)
+    logger.error("error in getAvailabilitiesService: ", error)
     throw error
   }
 }
 
-export const deleteTimeFromAvailability = async (date: Date, hour: string, userId: string): Promise<boolean> => {
+export const deleteTimeFromAvailability = async (
+  date: Date,
+  hour: string,
+  userId: string,
+  tx?: Prisma.TransactionClient
+): Promise<Availability> => {
   try {
-    const availability = await getAvailabilityByDate(date, userId)
-    if (!availability) return false
-    const newTimes = availability.times.filter((hourValue) => hourValue != hour)
-    await prisma.availability.update({
-      where: {
-        id: availability.id
-      },
-      data: {
-        times: newTimes
-      }
-    })
+    const prismaClient = tx || prisma;
 
-    return true
-  } catch (error) {
-    console.error("error in deleteTimeFromAvailabilityService: ", error)
-    throw error
+    if (!date || !hour || !userId) {
+      throw new Error("Missing required fields");
+    }
+    if (!dayjs(date).isValid()) {
+      throw new Error("Invalid date format");
+    }
+    const availabilityDate = new Date(date);
+
+    const availability = await prismaClient.availability.findFirst({
+      where: { userId, date: availabilityDate },
+    });
+
+    if (!availability) {
+      throw new Error("Availability not found");
+    }
+    if (!availability.times.includes(hour)) {
+      throw new Error("Time slot not found in availability");
+    }
+
+    const updatedTimes = availability.times.filter((time) => time !== hour);
+    const updatedAvailability = await prismaClient.availability.update({
+      where: { id: availability.id },
+      data: { times: updatedTimes },
+    });
+
+    return updatedAvailability;
+  } catch (error: any) {
+    throw new Error(`Failed to delete time from availability: ${error.message}`);
   }
-}
-
+};
 
 export const deleteTimesFromAvailability = async (date: Date, start: Date, end: Date, userId: string): Promise<boolean> => {
   try {
@@ -63,7 +83,7 @@ export const deleteTimesFromAvailability = async (date: Date, start: Date, end: 
 
     return true;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     throw error;
   }
 };
@@ -76,39 +96,46 @@ const formatTime = (time: Date): string => {
   return `${hours}:${minutes}`;
 };
 
-
-
-
-
-export const addTimeToAvailability = async (date: Date, hour: string, userId: string): Promise<boolean> => {
+export const addTimeToAvailability = async (
+  date: Date,
+  hour: string,
+  userId: string,
+  tx?: Prisma.TransactionClient
+): Promise<Availability> => {
   try {
-    const availability = await getAvailabilityByDate(date, userId)
-    if (!availability) return false
-    if (availability.times.includes(hour)) return false
+    const prismaClient = tx || prisma;
 
-    availability.times.push(hour)
+    if (!date || !hour || !userId) {
+      throw new Error("Missing required fields");
+    }
+    if (!dayjs(date).isValid()) {
+      throw new Error("Invalid date format");
+    }
 
-    availability.times.sort((a, b) => {
-      const aStartTime = timeStringToDate(a.split(' - ')[0]);
-      const bStartTime = timeStringToDate(b.split(' - ')[0]);
+    const availability = await getAvailabilityByDate(date, userId);
+    if (!availability) {
+      throw new Error("Availability not found");
+    }
+    if (availability.times.includes(hour)) {
+      throw new Error("Time slot already exists in availability");
+    }
+
+    const updatedTimes = [...availability.times, hour].sort((a, b) => {
+      const aStartTime = timeStringToDate(a.split(" - ")[0]);
+      const bStartTime = timeStringToDate(b.split(" - ")[0]);
       return aStartTime.getTime() - bStartTime.getTime();
     });
 
-    await prisma.availability.update({
-      where: {
-        id: availability.id
-      },
-      data: {
-        times: availability.times
-      }
-    })
+    const updatedAvailability = await prismaClient.availability.update({
+      where: { id: availability.id },
+      data: { times: updatedTimes },
+    });
 
-    return true
-  } catch (error) {
-    console.error("error in addTimeToAvailabilityService: ", error)
-    throw error
+    return updatedAvailability;
+  } catch (error: any) {
+    throw new Error(`Failed to add time to availability: ${error.message}`);
   }
-}
+};
 
 export const checkIfAvailabilitiesOverlapping = async (date: Date, times: string[], userId: string): Promise<boolean> => {
   try {
@@ -153,14 +180,14 @@ export const checkIfAvailabilitiesOverlapping = async (date: Date, times: string
 
     return false
   } catch (error) {
-    console.error("error in checkIfAvailabilitiesOverlapping: ", error)
+    logger.error("error in checkIfAvailabilitiesOverlapping: ", error)
     throw error
   }
 };
 
 export const createAvailabilities = async (times: string[], date: Date, userId: string): Promise<boolean> => {
   try {
-    const availability = await prisma.availability.findFirst({ where: { userId:userId,date: date } })
+    const availability = await prisma.availability.findFirst({ where: { userId: userId, date: date } })
     if (availability) {
       const newTimes = availability.times
       newTimes.push(...times)
@@ -178,8 +205,7 @@ export const createAvailabilities = async (times: string[], date: Date, userId: 
       return true
     }
   } catch (error) {
-    console.log(error)
-    console.error("error in createAvailabilities: ", error)
+    logger.error("error in createAvailabilities: ", error)
     throw error
   }
 
@@ -203,7 +229,7 @@ export const getAvailabilityByDate = async (date: Date, userId: string): Promise
     })
     return availability
   } catch (error) {
-    console.error("error in getAvailabilityByDateService")
+    logger.error("error in getAvailabilityByDateService")
     throw error
   }
 }

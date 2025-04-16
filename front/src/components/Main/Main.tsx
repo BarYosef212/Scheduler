@@ -1,4 +1,4 @@
-import { getUser, isAuthenticated, logout } from '../../services/services';
+import { isAuthenticated, logout } from '../../services/services';
 import { useState, useEffect } from 'react';
 import { Loader } from '@mantine/core';
 import styles from './styles.module.css';
@@ -6,7 +6,7 @@ import { useValuesGlobal } from '../GlobalContext/GlobalContext';
 
 const Main: React.FC = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const {userId} = useValuesGlobal()
+  const {userId, user} = useValuesGlobal()
   const [title, setTitle] = useState<string>('');
   const [headTitle, setHeadtitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');
@@ -17,8 +17,6 @@ const Main: React.FC = () => {
       try {
         const authStatus = await isAuthenticated(userId);
         setIsAuth(authStatus);
-
-        const user = await getUser(userId);
         if (user) {
           setTitle(user.title || '');
           setHeadtitle(user.userName || '');
@@ -32,7 +30,7 @@ const Main: React.FC = () => {
     };
 
     fetchData();
-  }, [userId]);
+  }, [user]);
 
   const handleLogout = async () => {
     try {
