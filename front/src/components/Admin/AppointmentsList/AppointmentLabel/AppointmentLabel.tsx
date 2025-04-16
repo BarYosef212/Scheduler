@@ -11,17 +11,15 @@ import { useToast } from '../../../hooks/useToast';
 interface AppointmentLabelProps {
   booking: Booking;
   setAllBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
-  allTimes: Availability[];
 }
 
 const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
   booking,
   setAllBookings,
-  allTimes,
 }) => {
   const { hour, clientPhone, clientEmail, clientName, createdAt } = booking;
   const [opened, setOpened] = useState(false);
-  const { isLoading, setIsLoading } = useValuesAdmin();
+  const { isLoading, setIsLoading,allTimes } = useValuesAdmin();
   const {showToast} = useToast()
 
   const createdDate = createdAt ? new Date(createdAt) : new Date();

@@ -12,6 +12,7 @@ import ToggleButton from '../../ToggleButton/ToggleButton';
 import 'toastify-js/src/toastify.css';
 import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 import { useToast } from '../../hooks/useToast';
+import { clockIcon } from '../../../assets/icons';
 
 const LoadingBooking: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -32,20 +33,7 @@ const LoadingBooking: React.FC = () => {
         onClick={() => r.current?.showPicker()}
         className={styles.pickerIcon}
       >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          width='16'
-          height='16'
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='2'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        >
-          <circle cx='12' cy='12' r='10' />
-          <polyline points='12 6 12 12 16 14' />
-        </svg>
+        {clockIcon}
       </ActionIcon>
     );
   };
