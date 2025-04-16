@@ -1,7 +1,7 @@
 import styles from './AppointmentLabel.module.css';
 import { cancelBookingService } from '../../../../services/services';
 import { Availability, Booking } from '../../../../types/modelTypes';
-import {Modal } from '@mantine/core';
+import { Modal } from '@mantine/core';
 import ModalForm from './ModalForm/ModalForm';
 import { useState } from 'react';
 import { Loader } from '@mantine/core';
@@ -11,18 +11,16 @@ import { useToast } from '../../../hooks/useToast';
 interface AppointmentLabelProps {
   booking: Booking;
   setAllBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
-  allTimes: Availability[];
 }
 
 const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
   booking,
   setAllBookings,
-  allTimes,
 }) => {
   const { hour, clientPhone, clientEmail, clientName, createdAt } = booking;
   const [opened, setOpened] = useState(false);
-  const { isLoading, setIsLoading } = useValuesAdmin();
-  const {showToast} = useToast()
+  const { isLoading, setIsLoading, allTimes } = useValuesAdmin();
+  const { showToast } = useToast();
 
   const createdDate = createdAt ? new Date(createdAt) : new Date();
 
@@ -44,11 +42,10 @@ const AppointmentLabel: React.FC<AppointmentLabelProps> = ({
       if (res) {
         setAllBookings((prev) => prev.filter((b) => b.id !== booking.id));
       }
-      showToast('הפעולה בוצעה בהצלחה','success')
+      showToast('הפעולה בוצעה בהצלחה', 'success');
     } catch (error) {
       console.log(error);
       showToast('התרחשה שגיאה, אנא נסה בשנית', 'error');
-
     } finally {
       setIsLoading(false);
     }
