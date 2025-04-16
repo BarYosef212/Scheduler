@@ -42,6 +42,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
       !filtered.includes(formData.hour)
     )
       filtered.push(formData.hour);
+
     setTempTimes(filtered);
     if (!dayjs(formData.date).isSame(currentBooking.date, 'day'))
       setFormData({ ...formData, hour: filtered[0] });
