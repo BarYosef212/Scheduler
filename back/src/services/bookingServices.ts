@@ -1,97 +1,105 @@
 import { PrismaClient } from "@prisma/client";
 import { Booking } from '../types/modelsTypes'
-import { addTimeToAvailability, deleteTimeFromAvailability, getAvailabilityByDate } from "./availabilitiesServices";
+import * as AvailabilitiesServices from "./availabilitiesServices";
 import dayjs from "dayjs";
-import { createEvent, deleteEvent } from './googleCalendar';
+import * as GoogleService from './googleCalendar';
 import { getUser } from "./userServices";
+import logger from "../config/logger";
 const prisma = new PrismaClient()
 
 
-export const scheduleBooking = async (data: Booking): Promise<Booking | null> => {
+export const scheduleBooking = async (data: Booking): Promise<Booking> => {
   try {
-    const { date, hour, userId, clientPhone } = data;
+    const { date, hour, userId, clientPhone, clientEmail } = data;
+
+    if (!date || !hour || !userId || !clientPhone || !clientEmail) {
+      throw new Error("Missing required booking fields");
+    }
+    if (!dayjs(date).isValid()) {
+      throw new Error("Invalid date format");
+    }
+    const bookingDate = new Date(date);
 
     const existingBooking = await prisma.booking.findFirst({
       where: {
         userId,
-        clientPhone,
-        date,
+        OR: [
+          { clientPhone },
+          { clientEmail },
+        ],
+        date: bookingDate,
       },
     });
+    if (existingBooking) {
+      throw new Error("Booking already exists");
+    }
 
-    if (existingBooking) return null;
-    const availability = await getAvailabilityByDate(date, userId);
-    if (!availability?.times.includes(hour)) {
-      return null
-    };
+    const availability = await AvailabilitiesServices.getAvailabilityByDate(date, userId);
+    if (!availability || !availability.times.includes(hour)) {
+      throw new Error("Requested time slot unavailable");
+    }
 
     const user = await getUser(userId);
-
-    if (user?.googleTokens) {
-      const event = await createEvent(userId, 'primary', data);
-      if (!event) return null;
-      data.googleEventId = event.id ?? '0';
+    if (!user) {
+      throw new Error("User not found");
     }
 
-    const booking = await prisma.booking.create({ data });
+    return await prisma.$transaction(async (tx) => {
+      let googleEventId: string | undefined;
 
-    if (!booking) return null;
+      if (user.googleTokens) {
+        const event = await GoogleService.createEvent(userId, "primary", data);
+        if (!event?.id) {
+          throw new Error("Failed to create Google Calendar event");
+        }
+        googleEventId = event.id;
+      }
 
-    const deleted = await deleteTimeFromAvailability(date, hour, userId);
-    if (!deleted) {
-      await prisma.booking.delete({ where: { id: booking.id } });
-      return null;
-    }
+      const booking = await tx.booking.create({
+        data: { ...data, date: bookingDate, googleEventId },
+      });
 
-    return booking;
+      const updated = await AvailabilitiesServices.deleteTimeFromAvailability(date, hour, userId, tx);
+      if (!updated) {
+        throw new Error("Failed to update availability");
+      }
 
-  } catch (error) {
-    console.error("Failed to schedule booking:", error);
-    throw error;
+      return booking;
+    });
+  } catch (error: any) {
+    throw new Error(`Failed to schedule booking: ${error.message}`);
   }
 };
 
-
-export const cancelBooking = async (booking: Booking): Promise<boolean> => {
+export const cancelBooking = async (booking: Booking): Promise<void> => {
   try {
     const { id, date, hour, userId, googleEventId } = booking;
-    const newDate = new Date(date);
 
-    const added = await addTimeToAvailability(newDate, hour, userId);
-    if (!added) return false;
+    if (!id || !userId) {
+      throw new Error("Booking ID and user ID are required");
+    }
+    const bookingDate = new Date(date);
 
-    const deletedBooking = await prisma.booking.delete({
-      where: { id },
+    return await prisma.$transaction(async (tx) => {
+      await AvailabilitiesServices.addTimeToAvailability(bookingDate, hour, userId, tx);
+      await tx.booking.delete({ where: { id } });
+      const user = await getUser(userId);
+      if (user?.googleTokens && googleEventId) {
+        await GoogleService.deleteEvent(userId, "primary", googleEventId);
+      }
     });
-
-    if (!deletedBooking) {
-      await deleteTimeFromAvailability(date, hour, userId);
-      return false;
-    }
-
-    const user = await getUser(userId);
-    if (user?.googleTokens && googleEventId) {
-      await deleteEvent(userId, 'primary', googleEventId);
-    }
-
-    return true;
-
-  } catch (error) {
-    console.error("Failed to cancel booking:", { booking, error });
-    throw error;
+  } catch (error: any) {
+    throw new Error(`Failed to cancel booking: ${error.message}`);
   }
 };
 
-
-
-export const getAllBookingsById = async (id: string): Promise<Booking[] | null> => {
+export const getAllBookingsById = async (id: string): Promise<Booking[]> => {
   try {
     const bookings = await prisma.booking.findMany({ where: { userId: id } });
-
-    return bookings.length > 0 ? bookings : null;
+    return bookings
 
   } catch (error) {
-    console.error(`Error fetching bookings for user ${id}:`, error);
+    logger.error(`Error fetching bookings for user ${id}:`, error);
     throw error;
   }
 };
@@ -102,7 +110,7 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
     oldBooking.date = new Date(oldBooking.date)
     if (!(dayjs(newBooking.date).isSame(oldBooking.date)) || newBooking.hour != oldBooking.hour) {
       const scheduled = await scheduleBooking(newBooking)
-      if(scheduled){
+      if (scheduled) {
         await cancelBooking(oldBooking)
       }
     }
@@ -112,7 +120,7 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
 
     return true
   } catch (error) {
-    console.error("error with updateBooking controller")
+    logger.error("error with updateBooking controller")
     throw error
   }
 }

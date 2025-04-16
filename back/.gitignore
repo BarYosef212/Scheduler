@@ -7,3 +7,4 @@ src/caching.ts
 src/queries.ts
 src/realtime.ts
 .DS_Store
+logs/

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { User } from '../types/modelsTypes'
 import jwt from 'jsonwebtoken'
 import bcrypt from "bcryptjs";
+import logger from "../config/logger";
 
 const prisma = new PrismaClient()
 
@@ -18,8 +19,8 @@ export const userLogin = async (email: string, password: string): Promise<string
     }
 
     return null
-  } catch (error) {
-    console.log(error)
+  } catch (error:any) {
+    logger.log(error)
     throw error
   }
 }
@@ -32,8 +33,8 @@ export const getUser = async (userId: string): Promise<User> => {
       },
     });
     return user as User;
-  } catch (error) {
-    console.log(error);
+  } catch (error:any) {
+    logger.log(error);
     throw error;
   }
 };
@@ -43,8 +44,8 @@ export const updateUser = async(userId:string,data:Partial<User>):Promise<boolea
     const updated = await prisma.user.update({where:{id:userId},data})
     if (updated) return true
     return false
-  } catch (error) {
-    console.log(error)
+  } catch (error:any) {
+    logger.log(error)
     throw error
   }
 }
@@ -60,8 +61,8 @@ export const register = async(userName:string,email:string,password:string):Prom
       },
     });
     return true
-  } catch (error) {
-    console.log(error)
+  } catch (error:any) {
+    logger.log(error)
     throw error
   }
 }

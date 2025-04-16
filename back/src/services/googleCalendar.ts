@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { Booking, User } from '../types/modelsTypes';
 import { updateUser } from './userServices';
 import { getUser } from './userServices';
+import logger from '../config/logger';
 
 dotenv.config();
 
@@ -19,7 +20,7 @@ export const redirectToGoogleAuth = (req: any, res: any) => {
     const url = getAuthUrl(state);
     res.redirect(url);
   } catch (error) {
-    console.error('Error in redirectToGoogleAuth:', error);
+    logger.error('Error in redirectToGoogleAuth:', error);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -36,7 +37,7 @@ export const handleGoogleAuthCallback = async (req: any, res: any) => {
       : `http://localhost:5173/admin/${userId}`;
     res.redirect(redirectUrl);
   } catch (error) {
-    console.error('Error in handleGoogleAuthCallback:', error);
+    logger.error('Error in handleGoogleAuthCallback:', error);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -51,7 +52,7 @@ export const getAuthUrl = (state: string) => {
       state: encodeURIComponent(state),
     });
   } catch (error) {
-    console.error('Error in getAuthUrl:', error);
+    logger.error('Error in getAuthUrl:', error);
     throw error;
   }
 };
@@ -66,7 +67,7 @@ export const refreshAccessToken = async (user: User) => {
     await updateUser(user.id, { googleTokens: tokens });
     return tokens;
   } catch (error) {
-    console.error('Error in refreshAccessToken:', error);
+    logger.error('Error in refreshAccessToken:', error);
     throw error;
   }
 };
@@ -75,7 +76,7 @@ export const setCredentials = (tokens: any) => {
   try {
     oauth2Client.setCredentials(tokens);
   } catch (error) {
-    console.error('Error in setCredentials:', error);
+    logger.error('Error in setCredentials:', error);
     throw error;
   }
 };
@@ -123,8 +124,8 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
     });
     return response.data;
   } catch (error) {
-    console.error('Error in createEvent:', error);
-    throw error;
+    logger.error('Error in createEvent:', error);
+    return null
   }
 };
 
@@ -132,7 +133,6 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
 
 export const deleteEvent = async (userId: string, calendarId: string, eventId: string) => {
   try {
-   
     let user = await getUser(userId);
     let { googleTokens } = user;
 
@@ -145,12 +145,13 @@ export const deleteEvent = async (userId: string, calendarId: string, eventId: s
     setCredentials({ access_token: googleTokens.access_token });
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-    await calendar.events.delete({
+    const response = await calendar.events.delete({
       calendarId,
       eventId,
     });
+    return response.data;
   } catch (error) {
-    console.error('Error in deleteEvent:', error);
-    throw error;
+    logger.error('Error in deleteEvent:', error);
+    return null;
   }
 };
