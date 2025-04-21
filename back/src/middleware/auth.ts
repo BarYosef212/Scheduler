@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_MESSAGES } from "../controllers/messages";
+import { JWT_MESSAGES } from "../constants/messages";
 import logger from "../config/logger";
 
 export const checkToken = (req: Request, res: Response, next: NextFunction): void => {
@@ -27,8 +27,8 @@ export const isAuthenticated = (req: Request, res: Response) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {userId:string}
-    if (decoded.userId != userId) return res.status(401).json({message:JWT_MESSAGES.UNAUTHORIZED})
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string }
+    if (decoded.userId != userId) return res.status(401).json({ message: JWT_MESSAGES.UNAUTHORIZED })
     return res.json({ isAuth: true })
   } catch (error) {
     logger.error(JWT_MESSAGES.VERIFICATION_FAILED, error);

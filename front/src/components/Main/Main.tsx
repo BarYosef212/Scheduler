@@ -6,7 +6,7 @@ import { useValuesGlobal } from '../GlobalContext/GlobalContext';
 
 const Main: React.FC = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const {userId, user} = useValuesGlobal()
+  const { userId, user } = useValuesGlobal();
   const [title, setTitle] = useState<string>('');
   const [headTitle, setHeadtitle] = useState<string>('');
   const [logo, setLogo] = useState<string>('');

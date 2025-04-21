@@ -13,7 +13,6 @@ router.get('/auth/google/callback', async (req, res) => {
   googleServices.handleGoogleAuthCallback(req,res)
 });
 
-
 /**
  * @swagger
  * /api/getUser:
@@ -92,9 +91,43 @@ router.post('/logout', (req: Request, res: Response) => {
 })
 
 
-router.post('/userRegister',(req:Request,res:Response)=>{
-  controllers.userRegister(req,res)
-})
+/**
+ * @swagger
+ * /api/userRegister:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Register a new user
+ *     description: Registers a new user with the provided details.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userName:
+ *                 type: string
+ *                 description: The user's username.
+ *               email:
+ *                 type: string
+ *                 description: The user's email address.
+ *               password:
+ *                 type: string
+ *                 description: The user's password.
+ *             required:
+ *               - userName
+ *               - email
+ *               - password
+ *     responses:
+ *       201:
+ *         description: User registered successfully.
+ *       400:
+ *         description: Bad request.
+ */
+router.post('/userRegister', (req: Request, res: Response) => {
+  controllers.userRegister(req, res);
+});
 /**
  * @swagger
  * /api/auth/protected/{userId}:

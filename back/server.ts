@@ -22,7 +22,7 @@ app.use(express.json());
 
 
 app.use(cors({
-  origin: ["http://142.93.162.193:5173", "http://localhost:5173"],
+  origin: ["http://142.93.162.193:5173", "http://localhost:5173", "https://scheduletoday.me","www.scheduletoday.me"],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
@@ -37,7 +37,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 app.listen(PORT, () => {
-  logger.info(`Server connected on http://localhost:${PORT}/`)
+  logger.info(`Server connected on https://localhost:${PORT}/`)
 })
 
 

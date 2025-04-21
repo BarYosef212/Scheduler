@@ -2,7 +2,7 @@ import './App.css';
 import Main from './components/Main/Main';
 import { ScheduleProvider } from './components/Schedule/context/ScheduleContext';
 import { AdminProvider } from './components/Admin/context/AdminContext';
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AdminControl from './components/Admin/AdminControl';
 import Login from './components/Login/Login';
 import ProtectedRoute from './components/ProtectedRoute';

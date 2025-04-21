@@ -1,11 +1,8 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
 import * as service from '../services/availabilitiesServices';
-import { AVAILABILITY_MESSAGES, GENERAL_MESSAGES } from "./messages";
+import { AVAILABILITY_MESSAGES, GENERAL_MESSAGES } from "../constants/messages";
 import sendErrorResponse from "../utils/errorHandler";
 import HTTP from "../constants/status";
-
-const prisma = new PrismaClient();
 
 export const getAvailabilities = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -38,7 +35,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
       return sendErrorResponse(
         res,
         HTTP.StatusCodes.BAD_REQUEST,
-        `Error in createAvailabilities controller: ${GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED}`
+        GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED
       );
     }
 
@@ -48,7 +45,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
       return sendErrorResponse(
         res,
         HTTP.StatusCodes.BAD_REQUEST,
-        `Error in createAvailabilities controller: ${AVAILABILITY_MESSAGES.OVERLAP_AVAILABILITIES}`
+        AVAILABILITY_MESSAGES.OVERLAP_AVAILABILITIES
       );
     }
 
@@ -60,14 +57,14 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
       return sendErrorResponse(
         res,
         HTTP.StatusCodes.BAD_REQUEST,
-        `Error in createAvailabilities controller: ${GENERAL_MESSAGES.API_ERROR}`
+        GENERAL_MESSAGES.API_ERROR
       );
     }
   } catch (error) {
     return sendErrorResponse(
       res,
       HTTP.StatusCodes.INTERNAL_SERVER_ERROR,
-      `Error in createAvailabilities controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`
+      GENERAL_MESSAGES.UNKNOWN_ERROR
     );
   }
 };
@@ -80,7 +77,7 @@ export const deleteTimesFromAvailability = async (req: Request, res: Response): 
     return sendErrorResponse(
       res,
       HTTP.StatusCodes.BAD_REQUEST,
-      `Error in deleteTimesFromAvailability controller: ${GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED}`
+      GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED
     );
   }
 
@@ -92,7 +89,7 @@ export const deleteTimesFromAvailability = async (req: Request, res: Response): 
     return sendErrorResponse(
       res,
       HTTP.StatusCodes.BAD_REQUEST,
-      `Error in deleteTimesFromAvailability controller: ${AVAILABILITY_MESSAGES.FAIL_REMOVE_TIME}`
+      AVAILABILITY_MESSAGES.FAIL_REMOVE_TIME
     );
   }
 
@@ -103,7 +100,7 @@ export const deleteTimesFromAvailability = async (req: Request, res: Response): 
     return sendErrorResponse(
       res,
       HTTP.StatusCodes.INTERNAL_SERVER_ERROR,
-      `Error in deleteTimesFromAvailability controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`
+      GENERAL_MESSAGES.UNKNOWN_ERROR
     );
   }
 };

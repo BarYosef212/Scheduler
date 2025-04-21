@@ -9,6 +9,8 @@ const ScheduleConfirm: React.FC = () => {
   const dateStr = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
   }/${selectedDate.getFullYear()}`;
+  console.log("Error: ",errorConfirmMessage)
+
 
   return (
     <div className={styles.container}>
@@ -20,7 +22,7 @@ const ScheduleConfirm: React.FC = () => {
         ) : (
           <div className={styles.successContainer}>
             <div className={styles.iconSuccess}>✓</div>
-            <h2 className={styles.title}>תורך הוזמן בהצלחה</h2>
+            <h2 className={styles.title}>התור הוזמן בהצלחה</h2>
             <p className={styles.details}>
               לתאריך <strong>{dateStr}</strong>
               <br />

@@ -6,9 +6,18 @@ import logger from "../config/logger";
 
 const prisma = new PrismaClient()
 
+
 export const userLogin = async (email: string, password: string): Promise<string|null> => {
   try {
-    const user = await prisma.user.findFirst({ where: { email: email } })
+    const user = await prisma.user.findFirst({
+      where: {
+      email: {
+        equals: email,
+        mode: 'insensitive',
+      },
+      },
+    });
+
     if (!user) return null
 
 

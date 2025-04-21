@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "sourceMap": true,
+    "skipLibCheck": true,
     "outDir": "dist",
     "strict": true,
     "lib": ["esnext"],

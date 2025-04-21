@@ -1,6 +1,6 @@
 import styles from './AppointmentLabel.module.css';
 import { cancelBookingService } from '../../../../services/services';
-import { Availability, Booking } from '../../../../types/modelTypes';
+import { Booking } from '../../../../types/modelTypes';
 import { Modal } from '@mantine/core';
 import ModalForm from './ModalForm/ModalForm';
 import { useState } from 'react';

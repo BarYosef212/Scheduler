@@ -85,7 +85,7 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
   try {
     let user = await getUser(userId);
     let { googleTokens } = user;
-
+    
     const expiryDate = googleTokens.expiry_date;
     if (expiryDate && expiryDate <= Date.now()) {
       googleTokens = await refreshAccessToken(user);
@@ -104,8 +104,8 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
     endDate.setHours(endHour, endMinute, 0, 0);
 
     const event = {
-      summary: 'פגישה במערכת תורים',
-      description: `תור עבור ${clientName}`,
+      summary: `תור עבור ${clientName}`,
+      description: `פגישה שנוצרה ממערכת תורים`,
       start: { dateTime: startDate.toISOString() },
       end: { dateTime: endDate.toISOString() },
       visibility: 'private',

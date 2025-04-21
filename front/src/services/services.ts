@@ -14,6 +14,7 @@ api.interceptors.request.use((config) => {
 });
 
 
+
 export const authGoogle = async(userId:string)=>{
   try {
     const url = new URL('http://localhost:3000/api/auth/google');
@@ -104,7 +105,7 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
     return response.data.message
 
   } catch (error: any) {
-    return error.response.data.message
+    return error.response.data.error
   }
 }
 
@@ -125,7 +126,7 @@ export const createAvailabilities = async (interval: number, startTime: Date, en
     return response.data.message
   } catch (error: any) {
     console.log(error)
-    throw error.response.data.message
+    throw error.response.data.error
   }
 }
 
@@ -155,7 +156,7 @@ export const login = async (email: string, password: string): Promise<string> =>
     return response.data.message
   } catch (error:any) {
     console.log(error)
-    throw error.response.data.message
+    throw error.response.data.error
   }
 }
 
@@ -214,6 +215,6 @@ export const updateUser = async(userId:string,data:Partial<User>):Promise<string
     return response.data.message
   } catch (error:any) {
     console.log(error)
-    return error.response.data.message
+    return error.response.data.error
   }
 }

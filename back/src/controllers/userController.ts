@@ -1,20 +1,19 @@
 import { Request, Response } from "express";
 import * as service from "../services/userServices";
-import { USER_MESSAGE, GENERAL_MESSAGES } from "./messages";
+import { USER_MESSAGE, GENERAL_MESSAGES } from "../constants/messages";
 import HTTP from "../constants/status";
 import sendErrorResponse from "../utils/errorHandler";
 
 export const userLogin = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { email, password } = req.body;
-
+    const { email, password }:{email:string,password:string} = req.body;
     if (!email || !password) {
-      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `Error in userLogin controller: ${GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED}`);
+      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `${GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED}`);
     }
 
     const token = await service.userLogin(email, password);
     if (!token) {
-      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `Error in userLogin controller: ${USER_MESSAGE.INVALID_DETAILS}`);
+      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `${USER_MESSAGE.INVALID_DETAILS}`);
     }
 
     res.cookie("token", token, {
@@ -26,7 +25,7 @@ export const userLogin = async (req: Request, res: Response): Promise<Response> 
 
     return res.json({ message: USER_MESSAGE.LOGIN });
   } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in userLogin controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`);
+    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
   }
 };
 
@@ -42,6 +41,8 @@ export const userLogout = async (req: Request, res: Response): Promise<Response>
     return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in userLogout controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`);
   }
 };
+
+
 
 export const userRegister = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -86,10 +87,10 @@ export const updateUser = async (req: Request, res: Response): Promise<Response>
   try {
     const updated = await service.updateUser(userId, data);
     if (!updated) {
-      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `Error in updateUser controller: ${USER_MESSAGE.UPDATE_FAILED}`);
+      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, USER_MESSAGE.UPDATE_FAILED);
     }
     return res.json({ message: GENERAL_MESSAGES.SUCCESS });
   } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in updateUser controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`);
+    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
   }
 };

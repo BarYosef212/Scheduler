@@ -27,7 +27,7 @@ const ModalForm: React.FC<ModalFormProps> = ({
   const [tempTimes, setTempTimes] = useState<String[]>([]);
   const [error, setError] = useState<String>('');
   const [visible, { toggle }] = useDisclosure(false);
-  const [message, setMessage] = useState<String>('מעדכן את התור, אנא המתן...');
+  const [message, setMessage] = useState<String>('...מעדכן את התור, אנא המתן');
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,

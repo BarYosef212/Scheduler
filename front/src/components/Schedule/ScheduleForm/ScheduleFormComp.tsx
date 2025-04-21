@@ -41,12 +41,12 @@ const ScheduleForm: React.FC = () => {
 
     try {
       if (userId) {
-        await scheduleBooking(bookingData as Booking, userId).then(() =>
-          nextStep(),
-        );
+        await scheduleBooking(bookingData as Booking, userId).then(() => {
+          nextStep();
+        });
       }
     } catch (error: any) {
-      setErrorConfirmMessage(error.response.data.message);
+      setErrorConfirmMessage(error.response.data.error);
       nextStep();
     }
   };
@@ -119,7 +119,9 @@ const ScheduleForm: React.FC = () => {
           type='submit'
           className={styles.submitBtn}
           onClick={handleSubmit}
-          disabled={!!error ||!state.email||!state.fullName || !state.phoneNumber}
+          disabled={
+            !!error || !state.email || !state.fullName || !state.phoneNumber
+          }
         >
           קבע תור
         </button>

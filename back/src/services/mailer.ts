@@ -5,7 +5,7 @@ import logger from '../config/logger';
 if (!process.env.SENDGRID_API_KEY) throw new Error("No Api key")
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-export const sendAppointmentUpdate = async (sender: string, to: string, subject: string, text: string, logo?: string) => {
+export const sendAppointmentUpdate = async (to: string, subject: string, text: string, logo?: string) => {
   try {
     const htmlContent = logo
       ? `<div style="direction: rtl; text-align: right;">
@@ -17,7 +17,7 @@ export const sendAppointmentUpdate = async (sender: string, to: string, subject:
          </div>`;
     const msg = {
       to: to,
-      from: sender,
+      from: 'no-reply@scheduletoday.me',
       subject: subject,
       html: htmlContent,
     };

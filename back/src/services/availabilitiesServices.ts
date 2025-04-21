@@ -1,7 +1,7 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Availability } from '../types/modelsTypes'
-import dayjs from "dayjs";
 import logger from "../config/logger";
+import { AVAILABILITY_MESSAGES, GENERAL_MESSAGES } from "../constants/messages";
 const prisma = new PrismaClient()
 
 
@@ -19,32 +19,27 @@ export const deleteTimeFromAvailability = async (
   date: Date,
   hour: string,
   userId: string,
-  tx?: Prisma.TransactionClient
 ): Promise<Availability> => {
   try {
-    const prismaClient = tx || prisma;
-
     if (!date || !hour || !userId) {
-      throw new Error("Missing required fields");
+      throw new Error(GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED);
     }
-    if (!dayjs(date).isValid()) {
-      throw new Error("Invalid date format");
-    }
+
     const availabilityDate = new Date(date);
 
-    const availability = await prismaClient.availability.findFirst({
+    const availability = await prisma.availability.findFirst({
       where: { userId, date: availabilityDate },
     });
 
     if (!availability) {
-      throw new Error("Availability not found");
+      throw new Error(AVAILABILITY_MESSAGES.NOT_FOUND);
     }
     if (!availability.times.includes(hour)) {
-      throw new Error("Time slot not found in availability");
+      throw new Error(AVAILABILITY_MESSAGES.TIME_SLOT_UNAVAILABLE);
     }
 
     const updatedTimes = availability.times.filter((time) => time !== hour);
-    const updatedAvailability = await prismaClient.availability.update({
+    const updatedAvailability = await prisma.availability.update({
       where: { id: availability.id },
       data: { times: updatedTimes },
     });
@@ -100,24 +95,18 @@ export const addTimeToAvailability = async (
   date: Date,
   hour: string,
   userId: string,
-  tx?: Prisma.TransactionClient
 ): Promise<Availability> => {
   try {
-    const prismaClient = tx || prisma;
 
     if (!date || !hour || !userId) {
-      throw new Error("Missing required fields");
+      throw new Error(GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED);
     }
-    if (!dayjs(date).isValid()) {
-      throw new Error("Invalid date format");
-    }
-
     const availability = await getAvailabilityByDate(date, userId);
     if (!availability) {
-      throw new Error("Availability not found");
+      throw new Error(AVAILABILITY_MESSAGES.NOT_FOUND);
     }
     if (availability.times.includes(hour)) {
-      throw new Error("Time slot already exists in availability");
+      throw new Error(AVAILABILITY_MESSAGES.TIME_SLOT_ALREADY_EXISTS);
     }
 
     const updatedTimes = [...availability.times, hour].sort((a, b) => {
@@ -126,7 +115,7 @@ export const addTimeToAvailability = async (
       return aStartTime.getTime() - bStartTime.getTime();
     });
 
-    const updatedAvailability = await prismaClient.availability.update({
+    const updatedAvailability = await prisma.availability.update({
       where: { id: availability.id },
       data: { times: updatedTimes },
     });
@@ -208,7 +197,6 @@ export const createAvailabilities = async (times: string[], date: Date, userId: 
     logger.error("error in createAvailabilities: ", error)
     throw error
   }
-
 }
 
 export const getAvailabilityByDate = async (date: Date, userId: string): Promise<Availability | null> => {

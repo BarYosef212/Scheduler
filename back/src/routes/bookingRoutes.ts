@@ -1,4 +1,4 @@
-import express, {Request,Response} from 'express'
+import express, { Request, Response } from 'express'
 import * as controllers from '../controllers/bookingController'
 import { checkToken } from '../middleware/auth'
 
@@ -23,8 +23,8 @@ const router = express.Router()
  *       200:
  *         description: Booking scheduled successfully
  */
-router.post('/scheduleBooking/:userId',(req:Request,res:Response)=>{
-  controllers.scheduleBooking(req,res)
+router.post('/scheduleBooking/:userId', (req: Request, res: Response) => {
+  controllers.scheduleBooking(req, res)
 })
 
 /**
@@ -51,6 +51,11 @@ router.get('/getConfirmedBookings/:userId', (req: Request, res: Response) => {
   controllers.getBookingsById(req, res)
 })
 
+
+router.post('/cancelAllBookingsOnDate/:userId', (req: Request, res: Response) => {
+  controllers.cancelAllBookingsOnDate(req, res)
+})
+
 /**
  * @swagger
  * /api/cancelBooking:
@@ -64,8 +69,8 @@ router.get('/getConfirmedBookings/:userId', (req: Request, res: Response) => {
  *       200:
  *         description: Booking canceled successfully
  */
-router.post('/cancelBooking', checkToken,(req:Request,res:Response)=>{
-  controllers.cancelBooking(req,res)
+router.post('/cancelBooking', checkToken, (req: Request, res: Response) => {
+  controllers.cancelBooking(req, res)
 })
 
 /**
@@ -81,8 +86,8 @@ router.post('/cancelBooking', checkToken,(req:Request,res:Response)=>{
  *       200:
  *         description: Booking updated successfully
  */
-router.put('/updateBooking', checkToken,(req:Request,res:Response)=>{
-  controllers.updateBooking(req,res)
+router.put('/updateBooking', checkToken, (req: Request, res: Response) => {
+  controllers.updateBooking(req, res)
 })
 
 
