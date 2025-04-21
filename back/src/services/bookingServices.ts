@@ -20,17 +20,17 @@ export const scheduleBooking = async (data: Booking): Promise<Booking> => {
       throw new Error(GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED);
     }
 
-    // const existingBooking = await prisma.booking.findFirst({
-    //   where: {
-    //     userId,
-    //     OR: [{ clientPhone }, { clientEmail }],
-    //     date: bookingDate,
-    //   },
-    // });
+    const existingBooking = await prisma.booking.findFirst({
+      where: {
+        userId,
+        OR: [{ clientPhone }, { clientEmail }],
+        date: bookingDate,
+      },
+    });
 
-    // if (existingBooking) {
-    //   throw new Error(BOOKING_MESSAGES.BOOKING_ALREADY_EXISTS);
-    // }
+    if (existingBooking) {
+      throw new Error(BOOKING_MESSAGES.BOOKING_ALREADY_EXISTS);
+    }
 
     const availability = await AvailabilitiesServices.getAvailabilityByDate(date, userId);
     if (!availability || !availability.times.includes(hour)) {

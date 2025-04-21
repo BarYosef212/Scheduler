@@ -218,3 +218,13 @@ export const updateUser = async(userId:string,data:Partial<User>):Promise<string
     return error.response.data.error
   }
 }
+
+export const cancelAllBookingsForDate = async (userId:string,date:Date): Promise<string> => {
+  try {
+    const response = await api.post<{ message: string }>(`/cancelAllBookingsOnDate/${userId}`, { date })
+    return response.data.message
+  } catch (error: any) {
+    console.log(error)
+    return error.response.data.error
+  }
+}

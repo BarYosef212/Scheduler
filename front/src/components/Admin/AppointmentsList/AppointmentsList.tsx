@@ -9,6 +9,8 @@ import { useValuesAdmin } from '../context/AdminContext';
 import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 import { authGoogle } from '../../../services/services';
 import { googleIcon } from '../../../assets/icons';
+import { useToast } from '../../hooks/useToast';
+import { useNavigate } from 'react-router-dom';
 
 const AppointmentsList = () => {
   const [allBookings, setAllBookings] = useState<Booking[]>([]);
@@ -17,7 +19,9 @@ const AppointmentsList = () => {
   const [scheduledDates, setScheduledDates] = useState<Date[]>([]);
   const [isConnectedToGoogle, setIsConnectedToGoogle] = useState<boolean>(true);
   const { setStep, isLoading, setIsLoading } = useValuesAdmin();
+  const { showToast } = useToast();
   const { userId } = useValuesGlobal();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +48,24 @@ const AppointmentsList = () => {
   useEffect(() => {
     setScheduledDates(allBookings.map((booking) => booking.date));
   }, [allBookings]);
+
+  const cancelAllBookings = async () => {
+    try {
+      setIsLoading(true);
+      const confirmation = confirm(
+        'האם אתה בטוח שברצונך לבטל את כלל התורים ליום זה? פעולה זו אינה ניתנת לביטול',
+      );
+      if (!confirmation) return;
+      await services.cancelAllBookingsForDate(userId, selectedDate);
+      navigate(`/${userId}`);
+      showToast("התורים בוטלו בהצלחה, הודעות נשלחו ללקוחות", 'success');
+    } catch (error: any) {
+      console.error('Error in :', error);
+      showToast(error, 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const formatHebrewDate = (date: Date) => {
     return date.toLocaleDateString('he-IL', {
@@ -104,6 +126,13 @@ const AppointmentsList = () => {
                 </div>
               ) : (
                 <div className={styles.bookingsList}>
+                  <button
+                    onClick={cancelAllBookings}
+                    className={styles.cancelDayButton}
+                  >
+                    ביטול יום
+                  </button>
+
                   {bookings.map((booking, index) => (
                     <div
                       className={`${styles.bookingItem} ${index % 2 === 0 ? styles.evenRow : styles.oddRow}`}

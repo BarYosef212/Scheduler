@@ -129,7 +129,33 @@
   border-radius: 2px;
 }
 
+.cancelDayButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--danger-color, #e53935);
+  color: white;
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--box-shadow-sm);
+}
 
+.cancelDayButton:hover {
+  background-color: var(--danger-hover, #c62828);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-md);
+}
+
+.cancelDayButton:active {
+  transform: translateY(0);
+  background-color: var(--danger-active, #b71c1c);
+}
 .bookingsList {
   display: flex;
   flex-direction: column;

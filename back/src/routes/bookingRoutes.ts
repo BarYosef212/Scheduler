@@ -51,7 +51,35 @@ router.get('/getConfirmedBookings/:userId', (req: Request, res: Response) => {
   controllers.getBookingsById(req, res)
 })
 
-
+/**
+ * @swagger
+ * /api/cancelAllBookingsOnDate/{userId}:
+ *   post:
+ *     tags:
+ *       - Booking
+ *     summary: Cancel all bookings for a user on a specific date
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               date:
+ *                 type: string
+ *                 format: date
+ *                 description: Date for which bookings should be canceled (in YYYY-MM-DD format)
+ *     responses:
+ *       200:
+ *         description: All bookings on the specified date canceled successfully
+ */
 router.post('/cancelAllBookingsOnDate/:userId', (req: Request, res: Response) => {
   controllers.cancelAllBookingsOnDate(req, res)
 })

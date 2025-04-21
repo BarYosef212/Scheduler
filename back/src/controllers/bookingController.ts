@@ -34,7 +34,6 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
     await mailer.sendAppointmentUpdate(clientEmail, subject, text, logo);
 
     if (dayjs(date).isSame(new Date())) {
-      console.log("1")
       const subject = `תור חדש במערכת תורים`;
       const text = `שלום <b>${user.userName}</b>,<br>נקבע להיום תור חדש עבור ${clientName} בשעה ${data.hour}`;
       const logo = user.logo || undefined;
@@ -62,7 +61,7 @@ export const getBookingsById = async (req: Request, res: Response): Promise<Resp
   }
 };
 
-export const cancelBooking = async (req: Request, res: Response): Promise<Response> => {
+export const cancelBooking = async (req: Request, res: Response,skipResponse=false): Promise<Response|void> => {
   try {
     const { booking }: { booking: Booking } = req.body;
     const { clientEmail, userId, clientName, hour } = booking;
@@ -73,7 +72,7 @@ export const cancelBooking = async (req: Request, res: Response): Promise<Respon
     const logo = user.logo || undefined;
 
     await mailer.sendAppointmentUpdate(clientEmail, subject, text, logo);
-    return res.sendStatus(HTTP.StatusCodes.OK);
+    if(!skipResponse) return res.sendStatus(HTTP.StatusCodes.OK);
   } catch (error) {
     return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
   }
@@ -84,14 +83,12 @@ export const cancelAllBookingsOnDate = async (req: Request, res: Response): Prom
     const { userId } = req.params;
     const { date } = req.body;
     const newDate = new Date(date);
-    console.log(newDate)
     const bookings = (await service.getAllBookingsById(userId)).filter((booking) =>
       dayjs(booking.date).isSame(newDate, "day")
     );
-
     for (const booking of bookings) {
       req.body = { booking };
-      await cancelBooking(req, res);
+      await cancelBooking(req, res, true);
     }
 
     return res.sendStatus(HTTP.StatusCodes.OK);
