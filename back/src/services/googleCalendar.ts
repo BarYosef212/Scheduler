@@ -7,10 +7,14 @@ import logger from '../config/logger';
 
 dotenv.config();
 
+const redirectUri = process.env.PRODUCTION === 'true'
+  ? `${process.env.FRONT_URL}/api/auth/google/callback`
+  : `http://localhost:3000/api/auth/google/callback`;
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
+  redirectUri
 );
 
 export const redirectToGoogleAuth = (req: any, res: any) => {
@@ -85,7 +89,7 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
   try {
     let user = await getUser(userId);
     let { googleTokens } = user;
-    
+
     const expiryDate = googleTokens.expiry_date;
     if (expiryDate && expiryDate <= Date.now()) {
       googleTokens = await refreshAccessToken(user);

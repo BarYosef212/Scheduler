@@ -26,6 +26,9 @@ const Preferences: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+  const [link, setLink] = useState<string>('');
+  const [adminLink, setAdminLink] = useState<string>('');
+
   const [error, setError] = useState<string>('');
 
   const daysOfWeek = [
@@ -50,6 +53,8 @@ const Preferences: React.FC = () => {
             title: user.title || '',
             logo: user.logo || '',
           });
+          setLink(`${import.meta.env.VITE_FRONT_URL}/${user.id}`);
+          setAdminLink(`${import.meta.env.VITE_FRONT_URL}/admin/${user.id}`);
         }
       } catch (err) {
         console.error('Error fetching preferences:', err);
@@ -90,7 +95,6 @@ const Preferences: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       setIsLoading(true);
       setError('');
@@ -116,6 +120,12 @@ const Preferences: React.FC = () => {
     }));
   };
 
+  const handleCopyLink = (admin: boolean = false) => {
+    console.log('1');
+    if (admin) navigator.clipboard.writeText(adminLink);
+    else navigator.clipboard.writeText(link);
+    showToast('הקישור הועתק בהצלחה');
+  };
   return (
     <>
       {isLoading ? (
@@ -127,7 +137,7 @@ const Preferences: React.FC = () => {
           </button>
           <h1 className={styles.title}>הגדרות עסק</h1>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
+          <form className={styles.form}>
             <div className={styles.section}>
               <h2 className={styles.sectionTitle}>ימי מנוחה</h2>
               <div className={styles.workDays}>
@@ -235,10 +245,25 @@ const Preferences: React.FC = () => {
             {success && (
               <div className={styles.success}>ההעדפות נשמרו בהצלחה!</div>
             )}
+            <button
+              type='button'
+              onClick={() => handleCopyLink()}
+              className={styles.buttonCopy}
+            >
+              העתק קישור ליומן שלי
+            </button>
+            <button
+              type='button'
+              onClick={() => handleCopyLink(true)}
+              className={styles.buttonCopy}
+            >
+              העתק קישור לממשק ניהול שלי
+            </button>
 
             <div className={styles.actions}>
               <Button
                 type='submit'
+                onClick={handleSubmit}
                 className={styles.submitButton}
                 loading={isLoading}
                 variant='gradient'

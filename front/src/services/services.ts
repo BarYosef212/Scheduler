@@ -17,7 +17,9 @@ api.interceptors.request.use((config) => {
 
 export const authGoogle = async(userId:string)=>{
   try {
-    const url = new URL('http://localhost:3000/api/auth/google');
+    const url = new URL(`${import.meta.env.VITE_PRODUCTION === 'true' 
+      ? import.meta.env.VITE_BACKEND_URL 
+      : 'http://localhost:3000/api'}/auth/google`);
     url.searchParams.append('userId', userId);
     window.location.href = url.toString()
   } catch (error) {
