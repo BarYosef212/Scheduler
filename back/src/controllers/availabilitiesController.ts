@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import * as service from '../services/availabilitiesServices';
 import { AVAILABILITY_MESSAGES, GENERAL_MESSAGES } from "../constants/messages";
-import sendErrorResponse from "../utils/errorHandler";
+import { sendErrorResponse, catchFunc, AppError } from "../utils/errorHandler";
 import HTTP from "../constants/status";
 
 export const getAvailabilities = async (req: Request, res: Response): Promise<Response> => {
@@ -14,15 +14,12 @@ export const getAvailabilities = async (req: Request, res: Response): Promise<Re
       return sendErrorResponse(
         res,
         HTTP.StatusCodes.BAD_REQUEST,
+        HTTP.ReasonPhrases.BAD_REQUEST,
         `Error in getAvailabilities controller: ${AVAILABILITY_MESSAGES.FAIL_GET_AVAILABILITIES}`
       );
     }
-  } catch (error) {
-    return sendErrorResponse(
-      res,
-      HTTP.StatusCodes.INTERNAL_SERVER_ERROR,
-      `Error in getAvailabilities controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`
-    );
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
@@ -35,6 +32,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
       return sendErrorResponse(
         res,
         HTTP.StatusCodes.BAD_REQUEST,
+        HTTP.ReasonPhrases.BAD_REQUEST,
         GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED
       );
     }
@@ -42,11 +40,7 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
     const overlaps = await service.checkIfAvailabilitiesOverlapping(date, times, userId);
 
     if (overlaps) {
-      return sendErrorResponse(
-        res,
-        HTTP.StatusCodes.BAD_REQUEST,
-        AVAILABILITY_MESSAGES.OVERLAP_AVAILABILITIES
-      );
+      throw new AppError(AVAILABILITY_MESSAGES.OVERLAP_AVAILABILITIES)
     }
 
     const created = await service.createAvailabilities(times, date, userId);
@@ -54,18 +48,10 @@ export const createAvailabilities = async (req: Request, res: Response): Promise
     if (created) {
       return res.json({ message: GENERAL_MESSAGES.SUCCESS });
     } else {
-      return sendErrorResponse(
-        res,
-        HTTP.StatusCodes.BAD_REQUEST,
-        GENERAL_MESSAGES.API_ERROR
-      );
+      throw new Error(GENERAL_MESSAGES.API_ERROR)
     }
-  } catch (error) {
-    return sendErrorResponse(
-      res,
-      HTTP.StatusCodes.INTERNAL_SERVER_ERROR,
-      GENERAL_MESSAGES.UNKNOWN_ERROR
-    );
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
@@ -96,11 +82,7 @@ export const deleteTimesFromAvailability = async (req: Request, res: Response): 
   try {
     await service.deleteTimesFromAvailability(parsedDate, parsedStartTime, parsedEndTime, userId);
     return res.json({ message: AVAILABILITY_MESSAGES.REMOVE_SUCCESS });
-  } catch (error) {
-    return sendErrorResponse(
-      res,
-      HTTP.StatusCodes.INTERNAL_SERVER_ERROR,
-      GENERAL_MESSAGES.UNKNOWN_ERROR
-    );
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };

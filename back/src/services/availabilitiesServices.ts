@@ -46,7 +46,7 @@ export const deleteTimeFromAvailability = async (
 
     return updatedAvailability;
   } catch (error: any) {
-    throw new Error(`Failed to delete time from availability: ${error.message}`);
+    throw error
   }
 };
 
@@ -122,7 +122,7 @@ export const addTimeToAvailability = async (
 
     return updatedAvailability;
   } catch (error: any) {
-    throw new Error(`Failed to add time to availability: ${error.message}`);
+    throw error
   }
 };
 
@@ -217,7 +217,6 @@ export const getAvailabilityByDate = async (date: Date, userId: string): Promise
     })
     return availability
   } catch (error) {
-    logger.error("error in getAvailabilityByDateService")
     throw error
   }
 }

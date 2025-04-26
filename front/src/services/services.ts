@@ -3,8 +3,8 @@ import { Booking, Availability, User } from "../types/modelTypes";
 import dayjs from "dayjs";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_PRODUCTION === 'true' 
-    ? import.meta.env.VITE_BACKEND_URL 
+  baseURL: import.meta.env.VITE_PRODUCTION === 'true'
+    ? import.meta.env.VITE_BACKEND_URL
     : 'http://localhost:3000/api'
 });
 
@@ -15,15 +15,15 @@ api.interceptors.request.use((config) => {
 
 
 
-export const authGoogle = async(userId:string)=>{
+export const authGoogle = async (userId: string) => {
   try {
-    const url = new URL(`${import.meta.env.VITE_PRODUCTION === 'true' 
-      ? import.meta.env.VITE_BACKEND_URL 
+    const url = new URL(`${import.meta.env.VITE_PRODUCTION === 'true'
+      ? import.meta.env.VITE_BACKEND_URL
       : 'http://localhost:3000/api'}/auth/google`);
     url.searchParams.append('userId', userId);
     window.location.href = url.toString()
   } catch (error) {
-    console.error('Error in :',error)
+    console.error('Error in :', error)
   }
 }
 
@@ -33,7 +33,7 @@ export const filterAvailabilitiesHours = (allTimes: Availability[], dateSelected
   const currentMinute = new Date().getMinutes()
   const date = allTimes.filter((e) => dayjs(e.date).isSame(dateSelected, "day"))
   const times = date[0]?.times || []
-  if (dayjs(today).isSame(dateSelected,"day")) {
+  if (dayjs(today).isSame(dateSelected, "day")) {
     const filteredTimes = times.filter((time) => {
       const [hour, minute] = time.split('-')[0].split(':').map(Number)
       return hour > currentHour || ((hour == currentHour) && (minute > currentMinute))
@@ -54,7 +54,7 @@ export const getAvailabilities = async (userId: string): Promise<Availability[]>
     const res = await api.get<{ availabilities: Availability[] }>(`/getAvailabilities/${userId}`);
     const list = res.data.availabilities || []
     return list
-  } catch (error:any) {
+  } catch (error: any) {
     console.log(error)
     throw error
   }
@@ -107,11 +107,11 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
     return response.data.message
 
   } catch (error: any) {
-    return error.response.data.error
+    return error.response.data.message
   }
 }
 
-export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date, userId: string):Promise<string> => {
+export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date, userId: string): Promise<string> => {
   try {
 
     const utcDate = new Date(
@@ -128,7 +128,7 @@ export const createAvailabilities = async (interval: number, startTime: Date, en
     return response.data.message
   } catch (error: any) {
     console.log(error)
-    throw error.response.data.error
+    throw error.response.data.message
   }
 }
 
@@ -142,13 +142,13 @@ export const deleteAvailabilities = async (startTime: Date, endTime: Date, date:
   }
 }
 
-export const getUser = async (userId: string): Promise<User | null> => {
+export const getUser = async (userId: string): Promise<User> => {
   try {
     const response = await api.get<{ user: User }>('/getUser', { params: { userId: userId } })
     return response.data.user
   } catch (error) {
     console.log(error)
-    return null
+    throw error
   }
 }
 
@@ -156,9 +156,9 @@ export const login = async (email: string, password: string): Promise<string> =>
   try {
     const response = await api.post<{ message: string }>('/login', { email, password })
     return response.data.message
-  } catch (error:any) {
+  } catch (error: any) {
     console.log(error)
-    throw error.response.data.error
+    throw error.response.data.message
   }
 }
 
@@ -211,22 +211,29 @@ export const isAuthenticated = async (userId: string): Promise<boolean> => {
   }
 }
 
-export const updateUser = async(userId:string,data:Partial<User>):Promise<string>=>{
+export const updateUser = async (userId: string, data: Partial<User>): Promise<string> => {
   try {
-    const response = await api.put<{message:string}>(`/updateUser/${userId}`,{data})
-    return response.data.message
-  } catch (error:any) {
-    console.log(error)
-    return error.response.data.error
-  }
-}
-
-export const cancelAllBookingsForDate = async (userId:string,date:Date): Promise<string> => {
-  try {
-    const response = await api.post<{ message: string }>(`/cancelAllBookingsOnDate/${userId}`, { date })
+    const response = await api.put<{ message: string }>(`/updateUser/${userId}`, { data })
     return response.data.message
   } catch (error: any) {
     console.log(error)
-    return error.response.data.error
+    return error.response.data.message
+  }
+}
+
+export const cancelAllBookingsForDate = async (userId: string, date: Date): Promise<string> => {
+  try {
+    const utcDate = new Date(
+      Date.UTC(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+      ),
+    );
+    const response = await api.post<{ message: string }>(`/cancelAllBookingsOnDate/${userId}`, { date: utcDate })
+    return response.data.message
+  } catch (error: any) {
+    console.log(error)
+    return error.response.data.message
   }
 }

@@ -2,18 +2,18 @@ import { Request, Response } from "express";
 import * as service from "../services/userServices";
 import { USER_MESSAGE, GENERAL_MESSAGES } from "../constants/messages";
 import HTTP from "../constants/status";
-import sendErrorResponse from "../utils/errorHandler";
+import {AppError, catchFunc, sendErrorResponse} from "../utils/errorHandler";
 
 export const userLogin = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { email, password }:{email:string,password:string} = req.body;
+    const { email, password }: { email: string, password: string } = req.body;
     if (!email || !password) {
-      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `${GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED}`);
+      throw new Error(GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED)
     }
 
     const token = await service.userLogin(email, password);
     if (!token) {
-      return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `${USER_MESSAGE.INVALID_DETAILS}`);
+      throw new AppError(USER_MESSAGE.INVALID_DETAILS)
     }
 
     res.cookie("token", token, {
@@ -24,9 +24,9 @@ export const userLogin = async (req: Request, res: Response): Promise<Response> 
     });
 
     return res.json({ message: USER_MESSAGE.LOGIN });
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
-  }
+  } catch (error: any) {
+      return catchFunc(error, res)
+    }
 };
 
 export const userLogout = async (req: Request, res: Response): Promise<Response> => {
@@ -37,8 +37,8 @@ export const userLogout = async (req: Request, res: Response): Promise<Response>
       sameSite: 'lax',
     });
     return res.json({ message: USER_MESSAGE.LOGOUT });
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in userLogout controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`);
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
@@ -53,8 +53,8 @@ export const userRegister = async (req: Request, res: Response): Promise<Respons
 
     await service.register(userName, email, password);
     return res.json({ message: USER_MESSAGE.REGISTER });
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in userRegister controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`);
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
@@ -75,8 +75,8 @@ export const getUser = async (req: Request, res: Response): Promise<Response> =>
     return res.json({
       user: rest,
     });
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in getUser controller: ${GENERAL_MESSAGES.UNKNOWN_ERROR}`);
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
@@ -90,7 +90,7 @@ export const updateUser = async (req: Request, res: Response): Promise<Response>
       return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, USER_MESSAGE.UPDATE_FAILED);
     }
     return res.json({ message: GENERAL_MESSAGES.SUCCESS });
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };

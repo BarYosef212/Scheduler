@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Preferences.module.css';
 import { Checkbox, TextInput, Button, Loader } from '@mantine/core';
-import { getUser, updateUser } from '../../../services/services';
+import { updateUser } from '../../../services/services';
 import { useValuesAdmin } from '../context/AdminContext';
 import { useValuesGlobal } from '../../GlobalContext/GlobalContext';
 import { useToast } from '../../hooks/useToast';
@@ -28,7 +28,7 @@ const Preferences: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [link, setLink] = useState<string>('');
   const [adminLink, setAdminLink] = useState<string>('');
-
+  const { user } = useValuesGlobal();
   const [error, setError] = useState<string>('');
 
   const daysOfWeek = [
@@ -45,7 +45,6 @@ const Preferences: React.FC = () => {
     const fetchPreferences = async () => {
       try {
         setIsLoading(true);
-        const user = await getUser(userId);
         if (user) {
           setPreferences({
             daysExcluded: user.daysExcluded,

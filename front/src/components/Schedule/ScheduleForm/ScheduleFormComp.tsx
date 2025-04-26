@@ -46,7 +46,7 @@ const ScheduleForm: React.FC = () => {
         });
       }
     } catch (error: any) {
-      setErrorConfirmMessage(error.response.data.error);
+      setErrorConfirmMessage(error.response.data.message);
       nextStep();
     }
   };

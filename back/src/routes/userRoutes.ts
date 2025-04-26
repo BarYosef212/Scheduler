@@ -10,7 +10,6 @@ router.get('/auth/google', (req, res) => {
 });
 
 router.get('/auth/google/callback', async (req, res) => {
-  console.log("enter")
   googleServices.handleGoogleAuthCallback(req,res)
 });
 

@@ -6,6 +6,7 @@ import * as GoogleService from './googleCalendar';
 import { getUser } from "./userServices";
 import logger from "../config/logger";
 import { AVAILABILITY_MESSAGES, BOOKING_MESSAGES, GENERAL_MESSAGES, USER_MESSAGE } from "../constants/messages";
+import { AppError } from "../utils/errorHandler";
 const prisma = new PrismaClient()
 
 
@@ -29,12 +30,12 @@ export const scheduleBooking = async (data: Booking): Promise<Booking> => {
     });
 
     if (existingBooking) {
-      throw new Error(BOOKING_MESSAGES.BOOKING_ALREADY_EXISTS);
+      throw new AppError(BOOKING_MESSAGES.BOOKING_ALREADY_EXISTS);
     }
 
     const availability = await AvailabilitiesServices.getAvailabilityByDate(date, userId);
     if (!availability || !availability.times.includes(hour)) {
-      throw new Error(AVAILABILITY_MESSAGES.TIME_SLOT_UNAVAILABLE);
+      throw new AppError(AVAILABILITY_MESSAGES.TIME_SLOT_UNAVAILABLE);
     }
 
     const user = await getUser(userId);
@@ -53,9 +54,6 @@ export const scheduleBooking = async (data: Booking): Promise<Booking> => {
     const booking = await prisma.booking.create({
       data: { ...data, date: bookingDate, googleEventId },
     });
-
-    if (!booking) throw new Error(BOOKING_MESSAGES.FAIL_NEW_BOOKING);
-
 
     createdBookingId = booking.id;
 
@@ -78,15 +76,13 @@ export const scheduleBooking = async (data: Booking): Promise<Booking> => {
         logger.error("Failed to rollback Google Calendar event creation:", rollbackError);
       });
     }
-
-    throw new Error(`Failed to schedule booking: ${error.message}`);
+    throw error
   }
 };
 
 export const cancelBooking = async (booking: Booking): Promise<void> => {
   const { id, date, hour, userId, googleEventId } = booking;
-  const bookingDate = new Date(date);
-
+  const bookingDate = new Date(date)
   try {
     if (!id || !userId) {
       throw new Error(GENERAL_MESSAGES.PARAMETERS_NOT_PROVIDED);
@@ -99,7 +95,7 @@ export const cancelBooking = async (booking: Booking): Promise<void> => {
       await GoogleService.deleteEvent(userId, "primary", googleEventId);
     }
   } catch (error: any) {
-    throw new Error(`Failed to cancel booking: ${error.message}`);
+    throw error
   }
 };
 

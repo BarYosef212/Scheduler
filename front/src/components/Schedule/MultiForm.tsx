@@ -3,7 +3,7 @@ import Main from '../Main/Main';
 import Schedule from './Schedule';
 import ScheduleConfirm from './ScheduleForm/ScheduleConfirm';
 import ScheduleForm from './ScheduleForm/ScheduleFormComp';
-import './MultiForm.css'
+import './MultiForm.css';
 
 const MultiForm: React.FC = () => {
   const { step, prevStep } = useValuesSchedule();

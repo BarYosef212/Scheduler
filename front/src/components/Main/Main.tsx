@@ -64,7 +64,7 @@ const Main: React.FC = () => {
             <h4 className={styles.pageSubtitle}>{title}</h4>
 
             <div className={styles.buttonContainer}>
-              <a href={`/Schedule/${userId}`} className={styles.actionButton}>
+              <a href={`/schedule/${userId}`} className={styles.actionButton}>
                 קבע תור
               </a>
 

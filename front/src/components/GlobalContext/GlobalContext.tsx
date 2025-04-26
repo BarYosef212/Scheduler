@@ -2,9 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { User } from '../../types/modelTypes';
 import { getUser } from '../../services/services';
+
 interface ValuesContextType {
   userId: string;
-  user: User | null;
+  user: User;
 }
 
 const GlobalContext = createContext<ValuesContextType>({} as ValuesContextType);
@@ -12,11 +13,27 @@ const GlobalContext = createContext<ValuesContextType>({} as ValuesContextType);
 const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const defaultUser: User = {
+    id: '',
+    userName: '',
+    email: '',
+    password: '',
+    daysExcluded: [],
+    googleTokens: null,
+  };
+
+  const [user, setUser] = useState<User>(defaultUser);
   const { userId = '' } = useParams();
+
   useEffect(() => {
-    if(userId) getUser(userId).then((user) => setUser(user));
+    console.log('Fetching user with userId:', userId);
+    if (userId)
+      getUser(userId)
+        .then((user) => setUser(user))
+        .catch(() => setUser(defaultUser));
   }, [userId]);
+
+  useEffect(() => console.log('User updated:', user), [user]);
 
   return (
     <GlobalContext.Provider

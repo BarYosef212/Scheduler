@@ -2,11 +2,12 @@ import { Request, Response } from "express";
 import * as service from '../services/bookingServices';
 import { Booking } from "../types/modelsTypes";
 import { BOOKING_MESSAGES, GENERAL_MESSAGES } from "../constants/messages";
-import { getUser } from "../services/userServices";
+import { getUser, updateUser } from "../services/userServices";
 import * as mailer from '../services/mailer';
 import HTTP from "../constants/status";
-import sendErrorResponse from "../utils/errorHandler";
+import { sendErrorResponse, catchFunc } from "../utils/errorHandler";
 import dayjs from "dayjs";
+import { deleteTimesFromAvailability } from "../services/availabilitiesServices";
 
 export const scheduleBooking = async (req: Request, res: Response): Promise<Response> => {
   try {
@@ -43,7 +44,7 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
     return res.json({ Booking });
 
   } catch (error: any) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+    return catchFunc(error, res)
   }
 };
 
@@ -55,13 +56,15 @@ export const getBookingsById = async (req: Request, res: Response): Promise<Resp
     if (bookings) {
       return res.json({ bookings: bookings });
     }
-    return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, `Error in getBookingsById controller: ${GENERAL_MESSAGES.API_ERROR}`);
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, `Error in getBookingsById controller: ${GENERAL_MESSAGES.API_ERROR}`);
+
+    return sendErrorResponse(res, HTTP.StatusCodes.BAD_REQUEST, HTTP.ReasonPhrases.BAD_REQUEST, `Error in getBookingsById controller: ${GENERAL_MESSAGES.API_ERROR}`);
+
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
-export const cancelBooking = async (req: Request, res: Response,skipResponse=false): Promise<Response|void> => {
+export const cancelBooking = async (req: Request, res: Response, skipResponse = false): Promise<Response | void> => {
   try {
     const { booking }: { booking: Booking } = req.body;
     const { clientEmail, userId, clientName, hour } = booking;
@@ -72,9 +75,9 @@ export const cancelBooking = async (req: Request, res: Response,skipResponse=fal
     const logo = user.logo || undefined;
 
     await mailer.sendAppointmentUpdate(clientEmail, subject, text, logo);
-    if(!skipResponse) return res.sendStatus(HTTP.StatusCodes.OK);
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
+    if (!skipResponse) return res.sendStatus(HTTP.StatusCodes.OK);
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };
 
@@ -82,18 +85,28 @@ export const cancelAllBookingsOnDate = async (req: Request, res: Response): Prom
   try {
     const { userId } = req.params;
     const { date } = req.body;
-    const newDate = new Date(date);
-    const bookings = (await service.getAllBookingsById(userId)).filter((booking) =>
+
+    const newDate = new Date(date)
+
+    const bookingsOfUser = await service.getAllBookingsById(userId)
+
+    const bookings = bookingsOfUser.filter((booking) =>
       dayjs(booking.date).isSame(newDate, "day")
     );
+
+
     for (const booking of bookings) {
       req.body = { booking };
       await cancelBooking(req, res, true);
     }
 
+    await deleteTimesFromAvailability(newDate, new Date(new Date().setHours(0, 0, 0, 0)), new Date(new Date().setHours(23, 59, 0, 0)), userId)
+
+
     return res.sendStatus(HTTP.StatusCodes.OK);
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR,GENERAL_MESSAGES.UNKNOWN_ERROR);
+  } catch (error: any) {
+    console.log("3")
+    return catchFunc(error, res)
   }
 };
 
@@ -118,7 +131,7 @@ export const updateBooking = async (req: Request, res: Response): Promise<Respon
     return res.json({
       message: BOOKING_MESSAGES.SUCCESS_UPDATE
     });
-  } catch (error) {
-    return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, GENERAL_MESSAGES.UNKNOWN_ERROR);
+  } catch (error: any) {
+    return catchFunc(error, res)
   }
 };

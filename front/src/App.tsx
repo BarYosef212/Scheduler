@@ -9,48 +9,51 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MultiForm from './components/Schedule/MultiForm';
 import { GlobalProvider } from './components/GlobalContext/GlobalContext';
 
-
 function App() {
   return (
     <Router>
-      <GlobalProvider>
-        <Routes>
-          <Route
-            path='/:userId'
-            element={
-              <GlobalProvider>
-                <Main />
-              </GlobalProvider>
-            }
-          />
-          <Route path='/Login/:userId' element={<Login />} />
-          <Route
-            path='/admin/:userId'
-            element={
-              <GlobalProvider>
-                <ProtectedRoute>
-                  <AdminProvider>
-                    <AdminControl />
-                  </AdminProvider>
-                </ProtectedRoute>
-              </GlobalProvider>
-            }
-          />
-          <Route
-            path='/Schedule/:userId'
-            element={
-              <GlobalProvider>
-                <ScheduleProvider>
-                  <MultiForm />
-                </ScheduleProvider>
-              </GlobalProvider>
-            }
-          />
-          <Route path='*' element={<p>404! There is nothing here!</p>} />
-        </Routes>
-      </GlobalProvider>
+      <Routes>
+        <Route
+          path='/:userId'
+          element={
+            <GlobalProvider>
+              <Main />
+            </GlobalProvider>
+          }
+        />
+        <Route
+          path='/login/:userId'
+          element={
+            <GlobalProvider>
+              <Login />
+            </GlobalProvider>
+          }
+        />
+        <Route
+          path='/admin/:userId'
+          element={
+            <GlobalProvider>
+              <ProtectedRoute>
+                <AdminProvider>
+                  <AdminControl />
+                </AdminProvider>
+              </ProtectedRoute>
+            </GlobalProvider>
+          }
+        />
+        <Route
+          path='/schedule/:userId'
+          element={
+            <GlobalProvider>
+              <ScheduleProvider>
+                <MultiForm />
+              </ScheduleProvider>
+            </GlobalProvider>
+          }
+        />
+        <Route path='*' element={<p>404! There is nothing here!</p>} />
+      </Routes>
     </Router>
   );
 }
-
 export default App;

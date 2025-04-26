@@ -4,7 +4,8 @@ export const BOOKING_MESSAGES = {
   FAIL_UPDATE_BOOKING: "שגיאה בעת עדכון התור, אנא נסה שנית",
   FAIL_CANCEL_BOOKING: "שגיאה בעת ביטול התור, אנא נסה שנית",
   BOOKING_ALREADY_EXISTS: "קיימת ללקוח זה הזמנה באותו יום, לא ניתן לבצע הזמנה נוספת",
-  GOOGLE_EVENT_CREATION_FAILED: "שגיאה ביצירת האירוע ביומן Google, אנא נסה שנית"
+  GOOGLE_EVENT_CREATION_FAILED: "שגיאה ביצירת האירוע ביומן Google, אנא נסה שנית",
+  ERROR:'שגיאה בעת הזמנת התור, אנא נסה שנית'
 };
 
 export const GENERAL_MESSAGES = {

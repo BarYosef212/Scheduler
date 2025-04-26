@@ -20,18 +20,16 @@ const AppointmentsList = () => {
   const [isConnectedToGoogle, setIsConnectedToGoogle] = useState<boolean>(true);
   const { setStep, isLoading, setIsLoading } = useValuesAdmin();
   const { showToast } = useToast();
-  const { userId } = useValuesGlobal();
+  const { user } = useValuesGlobal();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const confirmedBookings = await services.getBookingsById(userId);
+        const confirmedBookings = await services.getBookingsById(user.id);
         setAllBookings(confirmedBookings);
-        await services.getUser(userId).then((user) => {
-          if (user && !user.googleTokens) setIsConnectedToGoogle(false);
-        });
+        if (user && !user.googleTokens) setIsConnectedToGoogle(false);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -56,9 +54,9 @@ const AppointmentsList = () => {
         'האם אתה בטוח שברצונך לבטל את כלל התורים ליום זה? פעולה זו אינה ניתנת לביטול',
       );
       if (!confirmation) return;
-      await services.cancelAllBookingsForDate(userId, selectedDate);
-      navigate(`/${userId}`);
-      showToast("התורים בוטלו בהצלחה, הודעות נשלחו ללקוחות", 'success');
+      await services.cancelAllBookingsForDate(user.id, selectedDate);
+      navigate(`/${user.id}`);
+      showToast('התורים בוטלו בהצלחה, הודעות נשלחו ללקוחות', 'success');
     } catch (error: any) {
       console.error('Error in :', error);
       showToast(error, 'error');
@@ -86,7 +84,7 @@ const AppointmentsList = () => {
           <div className={styles.headerBar}>
             {!isConnectedToGoogle && (
               <button
-                onClick={() => authGoogle(userId)}
+                onClick={() => authGoogle(user.id)}
                 className={styles.googleCalendarButton}
               >
                 {googleIcon}
