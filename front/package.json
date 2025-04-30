@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "start":"serve -l 5173 dist --single"
+    "start": "serve -l 5173 dist --single"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -22,6 +22,7 @@
     "dayjs": "^1.11.13",
     "email-validator": "^2.0.4",
     "lucide-react": "^0.483.0",
+    "luxon": "^3.6.1",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/axios": "^0.9.36",
+    "@types/luxon": "^3.6.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/toastify-js": "^1.12.3",

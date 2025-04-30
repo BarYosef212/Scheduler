@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Arsenal+SC:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+Hebrew:wght@100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Rubik+Glitch+Pop&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 
 .mainContainer {
@@ -60,7 +60,7 @@
 }
 
 .pageTitle {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 800;
   background: linear-gradient(to right, var(--gold), var(--primary-color), var(--gold));
   background-size: 200% auto;
@@ -71,6 +71,11 @@
   letter-spacing: -0.5px;
   animation: shine 4s ease-in-out infinite;
   position: relative;
+
+  font-family: "Bebas Neue", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 1.5px;
 }
 
 @keyframes shine {
@@ -251,7 +256,7 @@
   }
 
   .pageTitle {
-    font-size: 2.2rem;
+    font-size: 3rem;
   }
 
   .pageSubtitle {
@@ -267,4 +272,3 @@
 [dir="rtl"] .actionButton {
   font-family: inherit;
 }
-

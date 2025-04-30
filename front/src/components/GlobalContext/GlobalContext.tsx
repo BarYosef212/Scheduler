@@ -26,14 +26,12 @@ const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({
   const { userId = '' } = useParams();
 
   useEffect(() => {
-    console.log('Fetching user with userId:', userId);
     if (userId)
       getUser(userId)
         .then((user) => setUser(user))
         .catch(() => setUser(defaultUser));
   }, [userId]);
 
-  useEffect(() => console.log('User updated:', user), [user]);
 
   return (
     <GlobalContext.Provider

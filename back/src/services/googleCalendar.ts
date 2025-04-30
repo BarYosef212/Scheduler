@@ -4,6 +4,7 @@ import { Booking, User } from '../types/modelsTypes';
 import { updateUser } from './userServices';
 import { getUser } from './userServices';
 import logger from '../config/logger';
+import {toZonedTime} from 'date-fns-tz'
 
 dotenv.config();
 
@@ -107,17 +108,20 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
     const endDate = new Date(date);
     endDate.setHours(endHour, endMinute, 0, 0);
 
+    const zonedStartDate = toZonedTime(startDate, 'Asia/Jerusalem')
+    const zonedEndDate = toZonedTime(endDate, 'Asia/Jerusalem')
+
     const event = {
       summary: `תור עבור ${clientName}`,
       description: `פגישה שנוצרה ממערכת תורים`,
-      start: { dateTime: startDate.toISOString() },
-      end: { dateTime: endDate.toISOString() },
+      start: { dateTime: zonedStartDate.toISOString() },
+      end: { dateTime: zonedEndDate.toISOString() },
       visibility: 'private',
       attendees: [
-        {
-          email: clientEmail,
-          comment: `Phone: ${clientPhone}`,
-        },
+      {
+        email: clientEmail,
+        comment: `Phone: ${clientPhone}`,
+      },
       ],
     };
 
@@ -132,8 +136,6 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
     return null
   }
 };
-
-
 
 export const deleteEvent = async (userId: string, calendarId: string, eventId: string) => {
   try {

@@ -34,7 +34,7 @@ export const scheduleBooking = async (req: Request, res: Response): Promise<Resp
     const logo = user.logo || undefined;
     await mailer.sendAppointmentUpdate(clientEmail, subject, text, logo);
 
-    if (dayjs(date).isSame(new Date())) {
+    if (dayjs(date).isSame(new Date(),"day")) {
       const subject = `תור חדש במערכת תורים`;
       const text = `שלום <b>${user.userName}</b>,<br>נקבע להיום תור חדש עבור ${clientName} בשעה ${data.hour}`;
       const logo = user.logo || undefined;
@@ -105,7 +105,6 @@ export const cancelAllBookingsOnDate = async (req: Request, res: Response): Prom
 
     return res.sendStatus(HTTP.StatusCodes.OK);
   } catch (error: any) {
-    console.log("3")
     return catchFunc(error, res)
   }
 };

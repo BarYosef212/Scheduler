@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Booking, Availability, User } from "../types/modelTypes";
 import dayjs from "dayjs";
+import { DateTime } from "luxon";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_PRODUCTION === 'true'
@@ -13,7 +14,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+const formatDate = (date: Date): string => {
+  const utcDate = DateTime.utc(
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate()
+  ).toISO();
 
+  if (!utcDate) throw Error('Problem with format date')
+
+  return utcDate
+}
 
 export const authGoogle = async (userId: string) => {
   try {
@@ -63,14 +74,9 @@ export const getAvailabilities = async (userId: string): Promise<Availability[]>
 export const scheduleBooking = async (data: Booking, userId: string): Promise<number | void> => {
   try {
     const { date } = data
-    const utcDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-      ),
-    );
-    data.date = utcDate
+
+    data.date = new Date(formatDate(date))
+
     const response = await api.post(`/scheduleBooking/${userId}`, data)
     return response.status
   } catch (error) {
@@ -114,17 +120,10 @@ export const updateBooking = async (newBooking: Booking, oldBooking: Booking): P
 export const createAvailabilities = async (interval: number, startTime: Date, endTime: Date, date: Date, userId: string): Promise<string> => {
   try {
 
-    const utcDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-      ),
-    );
+    const utcDate = formatDate(date)
     const times = createListOfTimes(interval, startTime, endTime)
 
     const response = await api.post<{ message: string }>(`/createAvailabilities/${userId}`, { times, date: utcDate })
-    console.log(response)
     return response.data.message
   } catch (error: any) {
     console.log(error)
@@ -223,13 +222,7 @@ export const updateUser = async (userId: string, data: Partial<User>): Promise<s
 
 export const cancelAllBookingsForDate = async (userId: string, date: Date): Promise<string> => {
   try {
-    const utcDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-      ),
-    );
+    const utcDate = formatDate(date)
     const response = await api.post<{ message: string }>(`/cancelAllBookingsOnDate/${userId}`, { date: utcDate })
     return response.data.message
   } catch (error: any) {

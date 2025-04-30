@@ -120,7 +120,6 @@ const Preferences: React.FC = () => {
   };
 
   const handleCopyLink = (admin: boolean = false) => {
-    console.log('1');
     if (admin) navigator.clipboard.writeText(adminLink);
     else navigator.clipboard.writeText(link);
     showToast('הקישור הועתק בהצלחה');

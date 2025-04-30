@@ -4,7 +4,7 @@ import HTTP from '../constants/status';
 
 export const sendErrorResponse = (res: Response, statusCode: number, message: string, details: string | null = null) => {
   logger.error(details || message);
-  return res.status(statusCode).json({ error: message });
+  return res.status(statusCode).json({ message });
 };
 
 
@@ -26,10 +26,10 @@ export class AppError extends Error {
 }
 
 
-export function catchFunc(error: Error, res: Response) {
+export function  catchFunc(error: Error, res: Response) {
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({ message: error.message });
   }
 
-  return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, HTTP.ReasonPhrases.INTERNAL_SERVER_ERROR, error.message);
+  return sendErrorResponse(res, HTTP.StatusCodes.INTERNAL_SERVER_ERROR, "Error occurred, please try again.", error.message);
 }

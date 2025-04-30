@@ -9,8 +9,6 @@ const ScheduleConfirm: React.FC = () => {
   const dateStr = `${selectedDate.getDate()}/${
     selectedDate.getMonth() + 1
   }/${selectedDate.getFullYear()}`;
-  console.log("Error: ",errorConfirmMessage)
-
 
   return (
     <div className={styles.container}>
