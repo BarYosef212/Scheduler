@@ -1,10 +1,10 @@
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
+import moment from 'moment-timezone';
 import { Booking, User } from '../types/modelsTypes';
 import { updateUser } from './userServices';
 import { getUser } from './userServices';
 import logger from '../config/logger';
-import {toZonedTime} from 'date-fns-tz'
 
 dotenv.config();
 
@@ -102,28 +102,30 @@ export const createEvent = async (userId: string, calendarId: string, data: Book
     const [startHour, startMinute] = hour.split("-")[0].trim().split(':').map(Number);
     const [endHour, endMinute] = hour.split("-")[1].trim().split(':').map(Number);
 
-    const startDate = new Date(date);
-    startDate.setHours(startHour, startMinute, 0, 0);
 
-    const endDate = new Date(date);
-    endDate.setHours(endHour, endMinute, 0, 0);
-
-    const zonedStartDate = toZonedTime(startDate, 'Asia/Jerusalem')
-    const zonedEndDate = toZonedTime(endDate, 'Asia/Jerusalem')
+    const startDate = moment.tz(date, 'Asia/Jerusalem').set({ hour: startHour, minute: startMinute }).toDate();
+    const endDate = moment.tz(date, 'Asia/Jerusalem').set({ hour: endHour, minute: endMinute }).toDate();
 
     const event = {
       summary: `תור עבור ${clientName}`,
       description: `פגישה שנוצרה ממערכת תורים`,
-      start: { dateTime: zonedStartDate.toISOString() },
-      end: { dateTime: zonedEndDate.toISOString() },
+      start: {
+        dateTime: startDate.toISOString(),
+        timeZone: 'Asia/Jerusalem',
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+        timeZone: 'Asia/Jerusalem',
+      },
       visibility: 'private',
       attendees: [
-      {
-        email: clientEmail,
-        comment: `Phone: ${clientPhone}`,
-      },
+        {
+          email: clientEmail,
+          comment: `Phone: ${clientPhone}`,
+        },
       ],
     };
+
 
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
     const response = await calendar.events.insert({
