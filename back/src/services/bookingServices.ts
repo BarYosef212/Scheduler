@@ -43,13 +43,18 @@ export const scheduleBooking = async (data: Booking): Promise<Booking> => {
       throw new Error(USER_MESSAGE.NOT_FOUND);
     }
 
-    if (user.googleTokens) {
-      const event = await GoogleService.createEvent(userId, "primary", data);
-      if (!event?.id) {
-        throw new Error(BOOKING_MESSAGES.GOOGLE_EVENT_CREATION_FAILED);
+    try {
+      if (user.googleTokens) {
+        const event = await GoogleService.createEvent(userId, "primary", data);
+        if (!event?.id) {
+          throw new Error(BOOKING_MESSAGES.GOOGLE_EVENT_CREATION_FAILED);
+        }
+        googleEventId = event.id;
       }
-      googleEventId = event.id;
+    } catch (error) {
+      logger.error('Error in create google event',error)
     }
+    
 
     const booking = await prisma.booking.create({
       data: { ...data, date: bookingDate, googleEventId },
